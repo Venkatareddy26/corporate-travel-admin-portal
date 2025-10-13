@@ -80,11 +80,25 @@ export default function ExpensePage(){
   });
 
   return (
-    <div className="p-6">
-      <button onClick={() => navigate(-1)} className="px-2 py-1 bg-white border rounded text-sm">← Back</button>
+    <div className="app-root space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="page-header">
+          <h1 className="section-heading text-3xl">Expense oversight</h1>
+          <p className="section-subheading">Track spend, flag exceptions, and manage reimbursements per traveller.</p>
+        </div>
+        <div className="page-actions">
+          <button onClick={() => navigate(-1)} className="btn btn-outline">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
+              <path d="M11 5l-5 5 5 5" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M6 10h8" strokeLinecap="round" />
+            </svg>
+            Back
+          </button>
+        </div>
+      </div>
 
       <div className="mt-6 grid grid-cols-12 gap-6">
-        <div className="col-span-4 bg-white rounded-lg border p-4">
+        <div className="col-span-4 surface-card p-5">
           <h2 className="text-lg font-semibold">Budgets</h2>
           <div className="mt-3">
             <h3 className="font-medium">Employees</h3>
@@ -109,7 +123,7 @@ export default function ExpensePage(){
           </div>
         </div>
 
-        <div className="col-span-8 bg-white rounded-lg border p-4">
+        <div className="col-span-8 surface-card p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">Expenses</h2>
             <div className="flex items-center gap-2">

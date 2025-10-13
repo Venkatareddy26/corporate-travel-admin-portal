@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+﻿import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -136,7 +136,7 @@ export default function Risk(){
   function triggerSOS(travelerId){
     setTravelers(t=> t.map(x=> x.id===travelerId ? ({...x, sos: true}) : x));
     const tr = travelers.find(x=> x.id===travelerId);
-    if(tr) sendNotification('ops@example.com', `SOS: ${tr.name}`, `${tr.name} triggered SOS at ${new Date().toLocaleString()} — last known location ${JSON.stringify(tr.location)}`);
+    if(tr) sendNotification('ops@example.com', `SOS: ${tr.name}`, `${tr.name} triggered SOS at ${new Date().toLocaleString()} €” last known location ${JSON.stringify(tr.location)}`);
   }
 
   function checkIn(travelerId){
@@ -147,7 +147,7 @@ export default function Risk(){
   function escalateForTraveler(travelerId){
     const tr = travelers.find(x=> x.id===travelerId);
     if(!tr) return;
-    const body = `Escalation for ${tr.name} — last known ${JSON.stringify(tr.location)} at ${tr.lastCheckIn}`;
+    const body = `Escalation for ${tr.name} €” last known ${JSON.stringify(tr.location)} at ${tr.lastCheckIn}`;
     sendNotification('hr@example.com', `Escalation: ${tr.name}`, body);
     sendNotification('security@example.com', `Escalation: ${tr.name}`, body);
     sendNotification('crisis@example.com', `Escalation: ${tr.name}`, body);
@@ -179,22 +179,36 @@ export default function Risk(){
   });
 
   return (
-    <div className="min-h-screen p-8">
+    <div className="min-h-screen app-root">
       <div className="max-w-7xl mx-auto">
-        <header className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-semibold">Risk & Safety</h1>
-            <div className="text-sm text-gray-500">Global risk map, traveler safety, advisories and emergency workflows</div>
+        <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="page-header">
+            <h1 className="section-heading text-3xl">Risk & Safety</h1>
+            <p className="section-subheading">Visualize regional risk, manage advisories, and keep travelers supported.</p>
           </div>
-          <div className="flex gap-2">
-            <button onClick={() => navigate(-1)} className="px-2 py-1 bg-white border rounded text-sm">← Back</button>
-            <button onClick={()=> { const adv = { id: generateId('adv'), destId: destinations[0].id, title: 'Manual advisory', level: 'Medium', ts: new Date().toISOString(), description: 'Manual advisory created by operator' }; setAdvisories(a => [adv, ...a]); sendNotification('ops@example.com', adv.title, adv.description);} } className="px-3 py-2 bg-purple-700 text-white rounded">Create advisory</button>
-            <button onClick={()=> { const ec = getEmergencyContacts(); if(ec.length===0) alert('No emergency contacts saved'); else alert(JSON.stringify(ec[0], null, 2)); }} className="px-3 py-2 bg-white border rounded">Emergency contacts</button>
+          <div className="page-actions">
+            <button onClick={() => navigate(-1)} className="btn btn-outline">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
+                <path d="M11 5l-5 5 5 5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M6 10h8" strokeLinecap="round" />
+              </svg>
+              Back
+            </button>
+            <button onClick={()=> { const adv = { id: generateId('adv'), destId: destinations[0].id, title: 'Manual advisory', level: 'Medium', ts: new Date().toISOString(), description: 'Manual advisory created by operator' }; setAdvisories(a => [adv, ...a]); sendNotification('ops@example.com', adv.title, adv.description);} } className="btn btn-primary">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
+                <path d="M10 4v12" strokeLinecap="round" />
+                <path d="M4 10h12" strokeLinecap="round" />
+              </svg>
+              Create advisory
+            </button>
+            <button onClick={()=> { const ec = getEmergencyContacts(); if(ec.length===0) alert('No emergency contacts saved'); else alert(JSON.stringify(ec[0], null, 2)); }} className="btn btn-outline">
+              Emergency contacts
+            </button>
           </div>
         </header>
 
         <div className="grid grid-cols-12 gap-6">
-          <div className="col-span-8 bg-white rounded-lg border p-4">
+          <div className="col-span-8 surface-card p-5">
             <h3 className="font-semibold mb-3">Risk map</h3>
             <div className="mb-4 text-sm text-gray-500">Color-coded destinations by risk (Low/Medium/High)</div>
             <div style={{height: 360}} className="border rounded overflow-hidden">
@@ -218,7 +232,7 @@ export default function Risk(){
                                 {advs.map(a => (
                                   <li key={a.id} className="text-xs border rounded p-1">
                                     <div className="font-semibold">{a.title}</div>
-                                    <div className="text-xs text-gray-500">{a.type} • {a.severity}</div>
+                                    <div className="text-xs text-gray-500">{a.type} €¢ {a.severity}</div>
                                     <div className="text-xs mt-1">{a.description}</div>
                                   </li>
                                 ))}
@@ -237,7 +251,7 @@ export default function Risk(){
               <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full" style={{background: riskColor('Low')}} /> Low</div>
               <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full" style={{background: riskColor('Medium')}} /> Medium</div>
               <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full" style={{background: riskColor('High')}} /> High</div>
-              <div className="ml-6 text-xs text-gray-500">Advisory types: political, weather, health, other — severity influences risk level.</div>
+              <div className="ml-6 text-xs text-gray-500">Advisory types: political, weather, health, other €” severity influences risk level.</div>
             </div>
 
             <div className="mt-4 grid grid-cols-3 gap-3">
@@ -259,7 +273,7 @@ export default function Risk(){
           </div>
 
           <div className="col-span-4 space-y-4">
-            <div className="bg-white rounded-lg border p-3">
+            <div className="surface-card p-4">
               <h3 className="font-semibold mb-2">Advisories</h3>
               <div className="text-xs text-gray-500 mb-2">Auto-alerts and advisories</div>
                 <div className="flex items-start gap-2 mb-2">
@@ -301,7 +315,7 @@ export default function Risk(){
                     <div key={a.id} className="p-2 border rounded text-sm">
                       <div className="flex items-center justify-between">
                         <div>
-                          <div className="font-medium">{a.title} <span className="text-xs ml-2 px-2 py-0.5 rounded" style={{background: a.severity==='high' ? '#fee2e2' : a.severity==='medium' ? '#fef3c7' : '#ecfdf5'}}>{a.type} • {a.severity}</span></div>
+                          <div className="font-medium">{a.title} <span className="text-xs ml-2 px-2 py-0.5 rounded" style={{background: a.severity==='high' ? '#fee2e2' : a.severity==='medium' ? '#fef3c7' : '#ecfdf5'}}>{a.type} €¢ {a.severity}</span></div>
                           <div className="text-xs text-gray-400">{new Date(a.ts).toLocaleString()}</div>
                         </div>
                       </div>
@@ -315,7 +329,7 @@ export default function Risk(){
                 </div>
             </div>
 
-            <div className="bg-white rounded-lg border p-3">
+            <div className="surface-card p-4">
               <h3 className="font-semibold mb-2">Traveler Safety</h3>
               <div className="text-xs text-gray-500 mb-2">Live locations (opt-in), SOS, check-ins</div>
               <div className="space-y-2">
@@ -344,7 +358,7 @@ export default function Risk(){
               </div>
             </div>
 
-            <div className="bg-white rounded-lg border p-3">
+            <div className="surface-card p-4">
               <h3 className="font-semibold mb-2">Emergency Response</h3>
               <div className="text-xs text-gray-500 mb-2">24/7 helpline & contact directory</div>
               <div className="text-sm">
@@ -363,7 +377,7 @@ export default function Risk(){
               </div>
             </div>
 
-            <div className="bg-white rounded-lg border p-3">
+            <div className="surface-card p-4">
               <h3 className="font-semibold mb-2">Notifications</h3>
               <div className="text-xs text-gray-500 mb-2">Sent messages & alerts</div>
               <div className="max-h-40 overflow-auto space-y-2 text-sm">
@@ -371,7 +385,7 @@ export default function Risk(){
                 { notifications.map(n => (
                   <div key={n.id} className="p-2 border rounded">
                     <div className="font-medium">{n.subject}</div>
-                    <div className="text-xs text-gray-400">to {n.to} • {new Date(n.ts).toLocaleString()}</div>
+                    <div className="text-xs text-gray-400">to {n.to} €¢ {new Date(n.ts).toLocaleString()}</div>
                     <div className="mt-2 flex gap-2">
                       <a className="text-xs px-2 py-1 bg-white border rounded" href={`mailto:${n.to}?subject=${encodeURIComponent(n.subject)}&body=${encodeURIComponent(n.body)}`} target="_blank" rel="noreferrer">Open</a>
                     </div>
@@ -386,3 +400,7 @@ export default function Risk(){
     </div>
   );
 }
+
+
+
+

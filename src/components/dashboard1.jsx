@@ -1,8 +1,9 @@
 import React from 'react';
-// Debug helper: confirm this module is loaded by the dev server in the browser console
-console.log('[debug] src/components/dashboard1.jsx loaded');
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { Bell, Globe, BarChart2, Users, FileText, Settings, HelpCircle } from 'lucide-react';
+
+// Debug helper: confirm this module is loaded by the dev server in the browser console
+console.log('[debug] src/components/dashboard1.jsx loaded');
 
 const COLORS = ['#4ade80', '#facc15', '#d1d5db'];
 

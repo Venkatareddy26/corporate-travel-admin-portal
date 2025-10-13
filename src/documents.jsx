@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+﻿import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function uid(prefix='d'){ return `${prefix}_${Date.now()}_${Math.floor(Math.random()*9000+1000)}` }
@@ -52,9 +52,11 @@ export default function Documents(){
       const arr = doc.dataUrl.split(',');
       const mime = arr[0].match(/:(.*?);/)[1];
       const bstr = atob(arr[1]);
-      let n = bstr.length;
+      const n = bstr.length;
       const u8 = new Uint8Array(n);
-      while(n--) u8[n] = bstr.charCodeAt(n);
+      for (let i = 0; i < n; i += 1){
+        u8[i] = bstr.charCodeAt(i);
+      }
       const blob = new Blob([u8], { type: mime });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a'); a.href = url; a.download = doc.filename || 'download'; a.click(); URL.revokeObjectURL(url);
@@ -89,19 +91,25 @@ export default function Documents(){
   function addPolicy(dest, types){ setPolicies(p => ({ ...p, [dest]: types })); }
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h1 className="text-2xl font-semibold">Document & Compliance</h1>
-          <div className="text-sm text-gray-500">Store passports, visas, vaccine certs, insurance & validate per policy</div>
+    <div className="app-root space-y-6">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="page-header">
+          <h1 className="section-heading text-3xl">Document & Compliance</h1>
+          <p className="section-subheading">Store passports, visas, vaccination records, and insurance while validating against policy rules.</p>
         </div>
-        <div>
-          <button onClick={()=> navigate(-1)} className="px-3 py-1 border rounded">← Back</button>
+        <div className="page-actions">
+          <button onClick={()=> navigate(-1)} className="btn btn-outline">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
+              <path d="M11 5l-5 5 5 5" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M6 10h8" strokeLinecap="round" />
+            </svg>
+            Back
+          </button>
         </div>
       </div>
 
       <div className="grid grid-cols-12 gap-6">
-        <aside className="col-span-3 bg-white rounded border p-3">
+        <aside className="col-span-3 surface-card p-4">
           <h3 className="font-semibold mb-2">Employees</h3>
           <ul className="space-y-2 text-sm">
             {employees.map(e => (
@@ -115,14 +123,14 @@ export default function Documents(){
             {reminders.length===0 && <div className="text-xs text-muted mt-2">No upcoming expiries</div>}
             {reminders.map(r => (
               <div key={r.id} className="text-xs border rounded p-2 mt-2">
-                <div><strong>{employees.find(x=>x.id===r.employeeId)?.name || '—'}</strong></div>
+                <div><strong>{employees.find(x=>x.id===r.employeeId)?.name || 'â€”'}</strong></div>
                 <div>{r.type} expires {new Date(r.expiry).toLocaleDateString()}</div>
               </div>
             ))}
           </div>
         </aside>
 
-        <main className="col-span-6 bg-white rounded border p-4">
+        <main className="col-span-6 surface-card p-5">
           <h3 className="font-semibold">Documents</h3>
           {!selectedEmployee && <div className="text-sm text-gray-500">Select an employee to manage documents</div>}
           {selectedEmployee && (
@@ -136,8 +144,8 @@ export default function Documents(){
                 {docs.filter(d=> d.employeeId===selectedEmployee).map(d => (
                   <div key={d.id} className="p-2 border rounded flex items-start justify-between">
                     <div>
-                      <div className="font-semibold">{d.type} — {d.filename}</div>
-                      <div className="text-xs text-muted">Uploaded {new Date(d.uploadedAt).toLocaleDateString()} {d.expiry ? `• Expires ${new Date(d.expiry).toLocaleDateString()}`:''}</div>
+                      <div className="font-semibold">{d.type} â€” {d.filename}</div>
+                      <div className="text-xs text-muted">Uploaded {new Date(d.uploadedAt).toLocaleDateString()} {d.expiry ? `â€¢ Expires ${new Date(d.expiry).toLocaleDateString()}`:''}</div>
                       {d.notes && <div className="text-xs mt-1">{d.notes}</div>}
                     </div>
                     <div className="flex flex-col gap-2">
@@ -152,7 +160,7 @@ export default function Documents(){
           )}
         </main>
 
-        <aside className="col-span-3 bg-white rounded border p-3">
+        <aside className="col-span-3 surface-card p-4">
           <h3 className="font-semibold">Trips & Validation</h3>
           <div className="mt-2">
             <select value={selectedTrip} onChange={e=> setSelectedTrip(e.target.value)} className="w-full border p-2 rounded text-sm">
@@ -164,14 +172,14 @@ export default function Documents(){
                 <div className="font-medium">Trip details</div>
                 <div className="text-xs text-muted mt-1">Validation status:</div>
                 <div className="mt-2">
-                  {(() => { const v = validateTrip(selectedTrip); return v.ok ? <div className="text-green-700">OK • All required docs present</div> : <div className="text-red-600">Blocked • Missing: {v.missing.join(', ')}</div> })()}
+                  {(() => { const v = validateTrip(selectedTrip); return v.ok ? <div className="text-green-700">OK â€¢ All required docs present</div> : <div className="text-red-600">Blocked â€¢ Missing: {v.missing.join(', ')}</div> })()}
                 </div>
                 <div className="mt-3">
                   <div className="text-xs font-medium">Attach documents to trip</div>
                   <div className="mt-2 space-y-2">
                     {docs.filter(d=> d.employeeId===selectedEmployee).map(d => (
                       <div key={d.id} className="flex items-center justify-between text-sm">
-                        <div>{d.type} — {d.filename}</div>
+                        <div>{d.type} â€” {d.filename}</div>
                         <div>
                           <button className="px-2 py-0.5 border rounded text-xs" onClick={()=> attachDocToTrip(d.id, selectedTrip)}>Attach</button>
                         </div>
@@ -184,7 +192,7 @@ export default function Documents(){
           </div>
           <div className="mt-4">
             <h4 className="font-medium">Policies</h4>
-            <div className="text-xs text-muted mt-1">Destination → required types</div>
+            <div className="text-xs text-muted mt-1">Destination â†’ required types</div>
             <div className="mt-2 space-y-2 text-sm">
               {Object.keys(policies).length === 0 && <div className="text-xs text-muted">No policies defined</div>}
               {Object.entries(policies).map(([dest, types]) => (
@@ -217,3 +225,5 @@ export default function Documents(){
     </div>
   );
 }
+
+

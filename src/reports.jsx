@@ -28,19 +28,19 @@ function exportTripToPDF(trip) {
 // ---------------- UI Primitives ----------------
 function Card({ children, className = "" }) {
   return (
-    <div className={`bg-white shadow-sm rounded p-4 ${className}`}>
+    <div className={`surface-card p-5 ${className}`}>
       {children}
     </div>
   );
 }
 function Button({ children, variant = "primary", ...rest }) {
-  const base = "px-4 py-2 rounded text-sm font-medium";
+  const base = "px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors";
   const styles =
     variant === "primary"
-      ? "bg-blue-600 text-white"
+      ? "bg-gradient-to-r from-purple-600 to-purple-500 text-white hover:from-purple-500 hover:to-purple-400"
       : variant === "danger"
-      ? "bg-red-600 text-white"
-      : "border text-gray-700";
+      ? "bg-gradient-to-r from-rose-500 to-rose-600 text-white hover:from-rose-600 hover:to-rose-700"
+      : "border border-slate-200 text-slate-700 hover:border-purple-300";
   return (
     <button className={`${base} ${styles}`} {...rest}>
       {children}
@@ -114,8 +114,8 @@ function TripSummary({ trip }) {
     <Card>
       <div className="flex justify-between items-start">
         <div>
-          <h2 className="text-lg font-semibold">Trip Summary</h2>
-          <p className="text-sm text-gray-600">
+          <h2 className="section-heading text-xl">Trip Summary</h2>
+          <p className="section-subheading">
             {trip.destination.city}, {trip.destination.country}
           </p>
           <p className="mt-2">
@@ -126,8 +126,8 @@ function TripSummary({ trip }) {
           </p>
         </div>
         <div className="text-right">
-          <p className="text-sm">Duration</p>
-          <p className="text-xl font-bold">{trip.durationDays} days</p>
+          <p className="stat-label">Duration</p>
+          <p className="stat-number text-2xl">{trip.durationDays} days</p>
         </div>
       </div>
 
@@ -198,7 +198,7 @@ function ScheduleItem({ item }) {
 function ScheduleList({ schedule }) {
   return (
     <Card>
-      <h3 className="font-semibold mb-3">Day-by-day Schedule</h3>
+      <h3 className="section-heading text-lg mb-3">Day-by-day Schedule</h3>
       <div className="space-y-3">
         {schedule.map((item, idx) => (
           <ScheduleItem item={item} key={idx} />
@@ -210,7 +210,7 @@ function ScheduleList({ schedule }) {
 function SafetyPanel({ trip, onCheckIn, onSOS }) {
   return (
     <Card>
-      <h3 className="font-semibold mb-2">Safety & Support</h3>
+      <h3 className="section-heading text-lg mb-2">Safety & Support</h3>
       <div className="mb-3">
         <p className="text-sm text-gray-600">Emergency Contact</p>
         <p className="font-medium">
@@ -235,7 +235,7 @@ function SafetyPanel({ trip, onCheckIn, onSOS }) {
 function ActionsBar({ trip }) {
   return (
     <Card>
-      <h3 className="font-semibold mb-3">Actions</h3>
+      <h3 className="section-heading text-lg mb-3">Actions</h3>
       <div className="space-y-2">
         <Button onClick={() => exportTripToPDF(trip)}>Download PDF</Button>
         <Button
@@ -307,11 +307,11 @@ export default function Itinerary({ tripId = "trip-123" }) {
   if (loading) return <ItinerarySkeleton />;
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="app-root space-y-6">
       <header className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold">{trip.title}</h1>
-          <p className="text-sm text-gray-500">
+          <h1 className="section-heading text-3xl">{trip.title}</h1>
+          <p className="section-subheading mt-1">
             {trip.startDate} — {trip.endDate} • {trip.status}
           </p>
         </div>

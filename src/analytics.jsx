@@ -108,60 +108,61 @@ export default function Analytics(){
   }
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-4">
+    <div className="app-root space-y-6">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Reports & Analytics</h1>
-          <div className="text-sm text-gray-500">Operational insights: frequency, spend, policy compliance, ESG, risk incidents.</div>
+          <h1 className="section-heading text-3xl">Reports & Analytics</h1>
+          <p className="section-subheading mt-1 max-w-2xl">Operational insights across trip volumes, spend, compliance health, ESG estimates, and recorded incidents.</p>
         </div>
       </div>
 
       <div className="grid grid-cols-12 gap-6">
-        <aside className="col-span-3 bg-white rounded border p-4">
-          <h3 className="font-semibold mb-2">Filters</h3>
-          <div className="mb-3">
-            <label className="text-xs">Department</label>
-            <select value={deptFilter} onChange={e=> setDeptFilter(e.target.value)} className="w-full border p-2 rounded mt-1 text-sm">
+        <aside className="col-span-3 surface-card p-5 space-y-4">
+          <div>
+            <h3 className="section-heading text-lg mb-1">Filters</h3>
+            <p className="section-subheading text-xs">Refine analytics by team and geography.</p>
+          </div>
+          <div className="space-y-4">
+            <label className="stat-label block">Department</label>
+            <select value={deptFilter} onChange={e=> setDeptFilter(e.target.value)} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400/70 transition">
               {departments.map(d=> <option key={d} value={d}>{d}</option>)}
             </select>
-          </div>
-          <div className="mb-3">
-            <label className="text-xs">Region</label>
-            <select value={regionFilter} onChange={e=> setRegionFilter(e.target.value)} className="w-full border p-2 rounded mt-1 text-sm">
+            <label className="stat-label block">Region</label>
+            <select value={regionFilter} onChange={e=> setRegionFilter(e.target.value)} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400/70 transition">
               {regions.map(r=> <option key={r} value={r}>{r}</option>)}
             </select>
           </div>
 
-          <div className="mt-4">
-            <h4 className="text-sm font-medium">Exports</h4>
-            <div className="flex flex-col gap-2 mt-2">
-              <button onClick={downloadTripsCSV} className="px-3 py-2 border rounded text-sm">Download Trips CSV</button>
-              <button onClick={downloadExpensesCSV} className="px-3 py-2 border rounded text-sm">Download Expenses CSV</button>
-              <button onClick={downloadIncidents} className="px-3 py-2 border rounded text-sm">Download Incidents CSV</button>
-              <button onClick={exportPowerBI} className="px-3 py-2 bg-green-600 text-white rounded text-sm">Export snapshot (Power BI/JSON)</button>
+          <div className="mt-2">
+            <h4 className="section-heading text-sm mb-2">Exports</h4>
+            <div className="flex flex-col gap-2">
+              <button onClick={downloadTripsCSV} className="px-3 py-2 rounded-lg border border-slate-200 text-sm hover:border-purple-300 hover:text-purple-600 transition">Download Trips CSV</button>
+              <button onClick={downloadExpensesCSV} className="px-3 py-2 rounded-lg border border-slate-200 text-sm hover:border-purple-300 hover:text-purple-600 transition">Download Expenses CSV</button>
+              <button onClick={downloadIncidents} className="px-3 py-2 rounded-lg border border-slate-200 text-sm hover:border-purple-300 hover:text-purple-600 transition">Download Incidents CSV</button>
+              <button onClick={exportPowerBI} className="px-3 py-2 rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-sm shadow-sm hover:shadow transition">Export snapshot (Power BI/JSON)</button>
             </div>
           </div>
         </aside>
 
-        <main className="col-span-9">
-          <div className="grid grid-cols-3 gap-4 mb-6">
-            <div className="bg-white rounded p-4 border">
-              <div className="text-xs text-gray-500">Total Trips</div>
-              <div className="text-2xl font-bold">{trips.length}</div>
+        <main className="col-span-9 space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="surface-card p-5">
+              <div className="stat-label">Total Trips</div>
+              <div className="stat-number text-3xl">{trips.length}</div>
             </div>
-            <div className="bg-white rounded p-4 border">
-              <div className="text-xs text-gray-500">Total Spend</div>
-              <div className="text-2xl font-bold">${expenses.reduce((s,e)=>s+e.amount,0).toLocaleString()}</div>
+            <div className="surface-card p-5">
+              <div className="stat-label">Total Spend</div>
+              <div className="stat-number text-3xl">${expenses.reduce((s,e)=>s+e.amount,0).toLocaleString()}</div>
             </div>
-            <div className="bg-white rounded p-4 border">
-              <div className="text-xs text-gray-500">Incidents</div>
-              <div className="text-2xl font-bold">{incidents.length}</div>
+            <div className="surface-card p-5">
+              <div className="stat-label">Incidents</div>
+              <div className="stat-number text-3xl">{incidents.length}</div>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white rounded p-4 border">
-              <h4 className="font-semibold mb-2">Travel frequency by employee</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="surface-card p-6">
+              <h4 className="section-heading text-lg mb-2">Travel frequency by employee</h4>
               <div style={{ width: '100%', height: 220 }}>
                 <ResponsiveContainer width="100%" height={220}>
                   <BarChart data={freqByEmployee}>
@@ -174,8 +175,8 @@ export default function Analytics(){
               </div>
             </div>
 
-            <div className="bg-white rounded p-4 border">
-              <h4 className="font-semibold mb-2">Spend breakdown by category</h4>
+            <div className="surface-card p-6">
+              <h4 className="section-heading text-lg mb-2">Spend breakdown by category</h4>
               <div style={{ width: '100%', height: 220 }}>
                 <ResponsiveContainer width="100%" height={220}>
                   <PieChart>
@@ -190,9 +191,9 @@ export default function Analytics(){
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 mt-4">
-            <div className="bg-white rounded p-4 border">
-              <h4 className="font-semibold mb-2">Policy compliance</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="surface-card p-6">
+              <h4 className="section-heading text-lg mb-2">Policy compliance</h4>
               <div style={{ width: '100%', height: 180 }}>
                 <ResponsiveContainer width="100%" height={180}>
                   <PieChart>
@@ -205,8 +206,8 @@ export default function Analytics(){
               </div>
             </div>
 
-            <div className="bg-white rounded p-4 border">
-              <h4 className="font-semibold mb-2">ESG / CO₂ by destination (estimate)</h4>
+            <div className="surface-card p-6">
+              <h4 className="section-heading text-lg mb-2">ESG / CO2 by destination (estimate)</h4>
               <div style={{ width: '100%', height: 180 }}>
                 <ResponsiveContainer width="100%" height={180}>
                   <PieChart>
@@ -220,16 +221,28 @@ export default function Analytics(){
             </div>
           </div>
 
-          <div className="mt-6 bg-white rounded p-4 border">
-            <h3 className="font-semibold mb-3">Risk & Safety Incidents</h3>
+          <div className="surface-card p-6">
+            <h3 className="section-heading text-xl mb-3">Risk & Safety Incidents</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-xs text-gray-500"><th>ID</th><th>Date</th><th>Trip</th><th>Severity</th><th>Note</th></tr>
+                  <tr className="text-left text-xs text-muted uppercase tracking-[0.18em]">
+                    <th className="py-2">ID</th>
+                    <th>Date</th>
+                    <th>Trip</th>
+                    <th>Severity</th>
+                    <th>Note</th>
+                  </tr>
                 </thead>
                 <tbody>
                   {incidents.map(i => (
-                    <tr key={i.id} className="border-t"><td className="py-2">{i.id}</td><td>{i.date}</td><td>{i.tripId}</td><td>{i.severity}</td><td>{i.note}</td></tr>
+                    <tr key={i.id} className="border-t border-slate-200/60">
+                      <td className="py-2">{i.id}</td>
+                      <td>{i.date}</td>
+                      <td>{i.tripId}</td>
+                      <td>{i.severity}</td>
+                      <td>{i.note}</td>
+                    </tr>
                   ))}
                 </tbody>
               </table>

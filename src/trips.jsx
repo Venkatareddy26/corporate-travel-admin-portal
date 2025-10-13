@@ -166,26 +166,35 @@ export default function Trips(){
     const [form, setForm] = useState({ requester: '', department: '', destination: '', start: '', end: '', purpose: '', costEstimate: '', riskLevel: 'Low' });
 
     return (
-      <div className="bg-white p-4 rounded border">
-        <h3 className="font-semibold mb-2">New trip request</h3>
-        <div className="grid grid-cols-2 gap-2">
-          <input placeholder="Requester" className="border p-2" value={form.requester} onChange={(e)=> setForm({...form, requester: e.target.value})} />
-          <input placeholder="Department" className="border p-2" value={form.department} onChange={(e)=> setForm({...form, department: e.target.value})} />
-          <input placeholder="Destination" className="border p-2" value={form.destination} onChange={(e)=> setForm({...form, destination: e.target.value})} />
-          <input type="date" className="border p-2" value={form.start} onChange={(e)=> setForm({...form, start: e.target.value})} />
-          <input type="date" className="border p-2" value={form.end} onChange={(e)=> setForm({...form, end: e.target.value})} />
-          <select className="border p-2" value={form.riskLevel} onChange={(e)=> setForm({...form, riskLevel: e.target.value})}>
+      <div className="surface-card p-6 mt-4 space-y-4">
+        <div className="page-header">
+          <h3 className="section-heading text-lg">New trip request</h3>
+          <p className="section-subheading text-sm">Capture the essentials to route a request for approval.</p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <input placeholder="Requester" value={form.requester} onChange={(e)=> setForm({...form, requester: e.target.value})} />
+          <input placeholder="Department" value={form.department} onChange={(e)=> setForm({...form, department: e.target.value})} />
+          <input placeholder="Destination" value={form.destination} onChange={(e)=> setForm({...form, destination: e.target.value})} />
+          <input type="date" value={form.start} onChange={(e)=> setForm({...form, start: e.target.value})} />
+          <input type="date" value={form.end} onChange={(e)=> setForm({...form, end: e.target.value})} />
+          <select value={form.riskLevel} onChange={(e)=> setForm({...form, riskLevel: e.target.value})}>
             <option>Low</option>
             <option>Medium</option>
             <option>High</option>
           </select>
-          <input placeholder="Cost estimate" type="number" className="border p-2" value={form.costEstimate} onChange={(e)=> setForm({...form, costEstimate: Number(e.target.value)})} />
-          <textarea placeholder="Purpose" className="border p-2 col-span-2" value={form.purpose} onChange={(e)=> setForm({...form, purpose: e.target.value})} />
+          <input placeholder="Cost estimate" type="number" value={form.costEstimate} onChange={(e)=> setForm({...form, costEstimate: Number(e.target.value)})} />
+          <textarea placeholder="Purpose" className="sm:col-span-2" value={form.purpose} onChange={(e)=> setForm({...form, purpose: e.target.value})} />
         </div>
 
-        <div className="flex gap-2 mt-3">
-          <button onClick={()=> { onCreate(form); }} className="px-3 py-2 bg-purple-700 text-white rounded">Create</button>
-          <button onClick={()=> setShowForm(false)} className="px-3 py-2 bg-white border rounded">Cancel</button>
+        <div className="flex flex-wrap gap-3">
+          <button onClick={()=> { onCreate(form); }} className="btn btn-primary">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
+              <path d="M10 4v12" strokeLinecap="round" />
+              <path d="M4 10h12" strokeLinecap="round" />
+            </svg>
+            Submit request
+          </button>
+          <button onClick={()=> setShowForm(false)} className="btn btn-outline">Cancel</button>
         </div>
       </div>
     );
@@ -199,81 +208,81 @@ export default function Trips(){
     if(!trip) return null;
     return (
       <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4">
-        <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl p-4">
+        <div className="surface-card w-full max-w-3xl p-6">
           <div className="flex items-start justify-between">
             <div>
-              <h3 className="font-semibold text-lg">Trip details — {trip.destination}</h3>
-              <div className="text-xs text-gray-500">Requested by {trip.requester} — {trip.department}</div>
+              <h3 className="section-heading text-xl">Trip details - {trip.destination}</h3>
+              <div className="text-xs text-muted uppercase tracking-wider">Requested by {trip.requester} - {trip.department}</div>
             </div>
-            <div className="text-right">
-              <div className="text-sm">Status: <span className="font-medium">{trip.status}</span></div>
-              <div className="text-xs text-gray-400">Cost est: ${trip.costEstimate}</div>
+            <div className="text-right space-y-2">
+              <span className="badge-soft inline-flex justify-end" data-tone={trip.status === 'approved' ? 'emerald' : trip.status === 'pending' ? 'amber' : undefined}>{trip.status}</span>
+              <div className="text-xs text-muted uppercase tracking-wider">Cost est: ${trip.costEstimate}</div>
             </div>
           </div>
 
           <div className="mt-3 grid grid-cols-2 gap-3">
             <div>
-              <div className="text-xs text-gray-500">Dates</div>
-              <div className="font-medium">{trip.start} → {trip.end}</div>
+              <div className="text-xs text-muted uppercase tracking-wider">Dates</div>
+              <div className="font-medium">{trip.start} to {trip.end}</div>
 
-              <div className="mt-3 text-xs text-gray-500">Purpose</div>
+              <div className="mt-3 text-xs text-muted">Purpose</div>
               <div className="mt-1">{trip.purpose}</div>
 
-              <div className="mt-3 text-xs text-gray-500">Risk level</div>
-              <div className={`px-2 py-1 inline-block rounded ${trip.riskLevel==='High'?'bg-red-100 text-red-700':trip.riskLevel==='Medium'?'bg-yellow-100 text-yellow-700':'bg-green-100 text-green-700'}`}>{trip.riskLevel}</div>
+              <div className="mt-3 text-xs text-muted">Risk level</div>
+              <span className="badge-soft mt-1 inline-flex" data-tone={trip.riskLevel === 'High' ? 'amber' : trip.riskLevel === 'Low' ? 'emerald' : undefined}>{trip.riskLevel}</span>
 
-              <div className="mt-3 text-xs text-gray-500">Attachments</div>
+              <div className="mt-3 text-xs text-muted">Attachments</div>
               <div className="mt-1 space-y-1">
-                { (trip.attachments||[]).length === 0 && <div className="text-xs text-gray-400">No attachments</div> }
+                { (trip.attachments||[]).length === 0 && <div className="text-xs text-muted uppercase tracking-wider">No attachments</div> }
                 { (trip.attachments||[]).map((a,i)=> (
-                  <div key={i} className="text-sm flex items-center justify-between border rounded p-2">
-                    <div className="truncate mr-2">{a.name} <span className="text-xs text-gray-400">({Math.round(a.size/1024)} KB)</span></div>
+                  <div key={i} className="text-sm flex items-center justify-between rounded-xl border border-slate-200/70 bg-white/70 px-3 py-2">
+                    <div className="truncate mr-2">{a.name} <span className="text-xs text-muted uppercase tracking-wider">({Math.round(a.size/1024)} KB)</span></div>
                     <div className="flex gap-2">
-                      <button onClick={()=> alert('Download simulated in demo') } className="text-xs px-2 py-1 bg-white border rounded">Download</button>
+                      <button onClick={()=> alert('Download simulated in demo') } className="btn btn-outline text-xs">Download</button>
                     </div>
                   </div>
                 ))}
 
                 <div className="mt-2 flex items-center gap-2">
                   <input ref={fileInputRef} type="file" multiple className="hidden" onChange={(e)=> { handleAttach(trip.id, e.target.files); e.target.value=null; }} />
-                  <button onClick={()=> fileInputRef.current && fileInputRef.current.click()} className="px-3 py-2 bg-white border rounded text-sm">Attach files</button>
+                  <button onClick={()=> fileInputRef.current && fileInputRef.current.click()} className="btn btn-outline">Attach files</button>
                 </div>
               </div>
             </div>
 
             <div>
-              <div className="text-xs text-gray-500">Timeline</div>
+              <div className="text-xs text-muted uppercase tracking-wider">Timeline</div>
               <div className="mt-2 space-y-2 max-h-64 overflow-auto text-sm">
                 { (trip.timeline||[]).map((s,i)=> (
-                  <div key={i} className="p-2 border rounded flex items-center justify-between">
+                  <div key={i} className="rounded-xl border border-slate-200/70 bg-white/70 p-3 flex items-center justify-between">
                     <div>
-                      <div className="text-xs text-gray-500">{new Date(s.ts).toLocaleString()}</div>
+                      <div className="text-xs text-muted uppercase tracking-wider">{new Date(s.ts).toLocaleString()}</div>
                       <div className="font-medium">{s.status}</div>
-                      <div className="text-xs text-gray-400">by {s.user}</div>
+                      <div className="text-xs text-muted uppercase tracking-wider">by {s.user}</div>
                     </div>
-                    <div className="text-xs text-gray-400">{i === 0 ? 'latest' : ''}</div>
+                    <div className="text-xs text-muted uppercase tracking-wider">{i === 0 ? 'latest' : ''}</div>
                   </div>
                 ))}
               </div>
 
               <div className="mt-3">
-                <div className="text-xs text-gray-500">Comments</div>
+                <div className="text-xs text-muted uppercase tracking-wider">Comments</div>
                 <div className="mt-2 space-y-2 max-h-40 overflow-auto">
-                  { (trip.comments||[]).length === 0 && <div className="text-xs text-gray-400">No comments</div> }
+                  { (trip.comments||[]).length === 0 && <div className="text-xs text-muted uppercase tracking-wider">No comments</div> }
                   { (trip.comments||[]).map((c,i)=> (
-                    <div key={i} className="p-2 border rounded text-sm">
-                      <div className="text-xs text-gray-500">{c.by} — {new Date(c.ts).toLocaleString()}</div>
+                    <div key={i} className="rounded-xl border border-slate-200/70 bg-white/70 p-3 text-sm">
+                      <div className="text-xs text-muted uppercase tracking-wider">{c.by} - {new Date(c.ts).toLocaleString()}</div>
                       <div className="mt-1">{c.text}</div>
                     </div>
                   ))}
                 </div>
 
                 <div className="mt-2 flex gap-2">
-                  <input placeholder="Your name" value={approverName} onChange={(e)=> setApproverName(e.target.value)} className="border p-2 text-sm" />
+                  <input placeholder="Your name" value={approverName} onChange={(e)=> setApproverName(e.target.value)}  />
                 </div>
 
                 <div className="mt-2 flex gap-2">
-                  <input placeholder="Add a comment (optional)" className="border p-2 flex-1 text-sm" value={comment} onChange={(e)=> setComment(e.target.value)} />
+                  <input placeholder="Add a comment (optional)" className="flex-1" value={comment} onChange={(e)=> setComment(e.target.value)} />
                 </div>
 
                 <div className="mt-3 flex gap-2 items-center">
@@ -285,35 +294,35 @@ export default function Trips(){
                         // role check
                         if(!(currentRole === 'manager' || currentRole === 'finance')){ alert('Only managers or finance can approve requests.'); return; }
                         handleApprove(trip.id, approverName || currentUser?.name || 'Approver', comment);
-                        if(notify && trip.requesterEmail){ sendNotification(trip.id, trip.requesterEmail, `Your trip request to ${trip.destination} is approved`, `Hi ${trip.requester},\n\nYour trip to ${trip.destination} (${trip.start} → ${trip.end}) has been approved.\n\nComments: ${comment || '-'}\n\nRegards`); }
+                        if(notify && trip.requesterEmail){ sendNotification(trip.id, trip.requesterEmail, `Your trip request to ${trip.destination} is approved`, `Hi ${trip.requester},\n\nYour trip to ${trip.destination} (${trip.start} to ${trip.end}) has been approved.\n\nComments: ${comment || '-'}\n\nRegards`); }
                         setComment('');
-                      }} className="px-3 py-2 bg-green-600 text-white rounded">Approve</button>
+                      }} className="btn btn-primary">Approve</button>
 
                       <button onClick={()=> {
                         if(!(currentRole === 'manager' || currentRole === 'finance')){ alert('Only managers or finance can reject requests.'); return; }
                         const reason = comment || prompt('Reason for rejection');
                         if(reason!==null) {
                           handleReject(trip.id, approverName || currentUser?.name || 'Approver', reason);
-                          if(notify && trip.requesterEmail){ sendNotification(trip.id, trip.requesterEmail, `Your trip request to ${trip.destination} was rejected`, `Hi ${trip.requester},\n\nYour trip to ${trip.destination} (${trip.start} → ${trip.end}) has been rejected.\n\nReason: ${reason}\n\nRegards`); }
+                          if(notify && trip.requesterEmail){ sendNotification(trip.id, trip.requesterEmail, `Your trip request to ${trip.destination} was rejected`, `Hi ${trip.requester},\n\nYour trip to ${trip.destination} (${trip.start} to ${trip.end}) has been rejected.\n\nReason: ${reason}\n\nRegards`); }
                         }
                         setComment('');
-                      }} className="px-3 py-2 bg-red-50 text-red-600 rounded border">Reject</button>
+                      }} className="btn btn-outline text-red-600">Reject</button>
                     </>
                   )}
 
                   { trip.status === 'approved' && (
                     <>
-                      <button onClick={()=> handleStart(trip.id)} className="px-3 py-2 bg-indigo-600 text-white rounded">Mark Active</button>
-                      <button onClick={()=> { if(!(currentRole === 'manager' || currentRole === 'finance')){ alert('Only managers or finance can reject requests.'); return; } handleReject(trip.id, approverName || currentUser?.name || 'Approver', comment || 'Withdrawn by approver'); if(notify && trip.requesterEmail){ sendNotification(trip.id, trip.requesterEmail, `Your trip request to ${trip.destination} was rejected`, `Hi ${trip.requester},\n\nYour trip to ${trip.destination} (${trip.start} → ${trip.end}) has been rejected.\n\nReason: ${comment || '-'}\n\nRegards`); } setComment(''); }} className="px-3 py-2 bg-red-50 text-red-600 rounded border">Reject</button>
+                      <button onClick={()=> handleStart(trip.id)} className="btn btn-primary">Mark Active</button>
+                      <button onClick={()=> { if(!(currentRole === 'manager' || currentRole === 'finance')){ alert('Only managers or finance can reject requests.'); return; } handleReject(trip.id, approverName || currentUser?.name || 'Approver', comment || 'Withdrawn by approver'); if(notify && trip.requesterEmail){ sendNotification(trip.id, trip.requesterEmail, `Your trip request to ${trip.destination} was rejected`, `Hi ${trip.requester},\n\nYour trip to ${trip.destination} (${trip.start} to ${trip.end}) has been rejected.\n\nReason: ${comment || '-'}\n\nRegards`); } setComment(''); }} className="btn btn-outline text-red-600">Reject</button>
                     </>
                   )}
 
                   { trip.status === 'active' && (
-                    <button onClick={()=> handleComplete(trip.id)} className="px-3 py-2 bg-slate-700 text-white rounded">Complete</button>
+                    <button onClick={()=> handleComplete(trip.id)} className="btn btn-primary">Complete</button>
                   )}
 
-                  <button onClick={()=> onClose()} className="px-3 py-2 bg-white border rounded">Close</button>
-                  <button onClick={()=> handleDelete(trip.id)} className="px-3 py-2 bg-red-50 text-red-600 rounded">Delete</button>
+                  <button onClick={()=> onClose()} className="btn btn-outline">Close</button>
+                  <button onClick={()=> handleDelete(trip.id)} className="btn btn-outline text-red-600">Delete</button>
                 </div>
               </div>
             </div>
@@ -324,46 +333,65 @@ export default function Trips(){
   }
 
   return (
-    <div className="min-h-screen p-8">
+    <div className="min-h-screen app-root p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-2xl font-semibold">Trips management</h1>
-            <div className="text-sm text-gray-500">View, approve, and monitor employee trips</div>
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="page-header">
+            <h1 className="section-heading text-3xl">Trips management</h1>
+            <p className="section-subheading">View, approve, and monitor employee trips.</p>
           </div>
 
-          <div className="flex gap-2">
-            <button onClick={() => navigate(-1)} className="px-2 py-1 bg-white border rounded text-sm">← Back</button>
-            <button onClick={()=> setShowForm(s => !s)} className="px-3 py-2 bg-purple-700 text-white rounded">New trip</button>
-            <button onClick={()=> { localStorage.removeItem(TRIPS_KEY); setTrips(defaultTrips()); }} className="px-3 py-2 bg-white border rounded">Reset demo</button>
+          <div className="page-actions">
+            <button onClick={() => navigate(-1)} className="btn btn-outline">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
+                <path d="M11 5l-5 5 5 5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M6 10h8" strokeLinecap="round" />
+              </svg>
+              Back
+            </button>
+            <button onClick={()=> setShowForm(s => !s)} className="btn btn-primary">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
+                <path d="M10 4v12" strokeLinecap="round" />
+                <path d="M4 10h12" strokeLinecap="round" />
+              </svg>
+              {showForm ? 'Close form' : 'New trip'}
+            </button>
+            <button onClick={()=> { localStorage.removeItem(TRIPS_KEY); setTrips(defaultTrips()); }} className="btn btn-outline">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
+                <path d="M4 4h12" strokeLinecap="round" />
+                <path d="M6 4l1-2h6l1 2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M15 4l-.6 11.2A1.5 1.5 0 0112.9 16H7.1a1.5 1.5 0 01-1.5-1.4L5 4" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Reset demo
+            </button>
           </div>
         </div>
 
         { showForm && <NewTripForm onCreate={addTrip} /> }
 
-        <div className="mt-4 bg-white p-4 rounded border">
+        <div className="mt-4 surface-card p-5">
           <div className="flex gap-2 items-center">
-            <select className="border p-2 text-sm" value={filter.status} onChange={(e)=> setFilter(f => ({...f, status: e.target.value}))}>
+            <select  value={filter.status} onChange={(e)=> setFilter(f => ({...f, status: e.target.value}))}>
               <option value="all">All statuses</option>
               {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
-            <input placeholder="Department" className="border p-2 text-sm" value={filter.department} onChange={(e)=> setFilter(f=>({...f, department: e.target.value}))} />
-            <input placeholder="Destination" className="border p-2 text-sm" value={filter.destination} onChange={(e)=> setFilter(f=>({...f, destination: e.target.value}))} />
-            <input placeholder="Requester" className="border p-2 text-sm" value={filter.requester} onChange={(e)=> setFilter(f=>({...f, requester: e.target.value}))} />
+            <input placeholder="Department"  value={filter.department} onChange={(e)=> setFilter(f=>({...f, department: e.target.value}))} />
+            <input placeholder="Destination"  value={filter.destination} onChange={(e)=> setFilter(f=>({...f, destination: e.target.value}))} />
+            <input placeholder="Requester"  value={filter.requester} onChange={(e)=> setFilter(f=>({...f, requester: e.target.value}))} />
 
-            <div className="ml-auto text-sm text-gray-500">Showing {visible.length} of {trips.length}</div>
+            <div className="ml-auto text-sm text-muted">Showing {visible.length} of {trips.length}</div>
           </div>
 
           <div className="mt-3 grid grid-cols-12 gap-3">
             <div className="col-span-8">
               <ul className="space-y-2">
                 {visible.map(t => (
-                  <li key={t.id} className="p-3 border rounded flex items-center justify-between">
+                  <li key={t.id} className="surface-card p-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-purple-100 text-purple-800 flex items-center justify-center">{t.requester ? t.requester.charAt(0) : 'U'}</div>
                       <div>
-                        <div className="font-medium">{t.requester} <span className="text-xs text-gray-400">— {t.department}</span></div>
-                        <div className="text-sm text-gray-500">{t.destination} • {t.start} → {t.end} • ${t.costEstimate}</div>
+                        <div className="font-medium">{t.requester} <span className="text-xs text-muted uppercase tracking-wider">— {t.department}</span></div>
+                        <div className="section-subheading">{t.destination} • {t.start} → {t.end} • ${t.costEstimate}</div>
                       </div>
                     </div>
 
@@ -376,38 +404,38 @@ export default function Trips(){
                 ))}
 
                 { visible.length === 0 && (
-                  <li className="p-3 border rounded text-sm text-gray-500">No trip requests found</li>
+                  <li className="surface-card p-4 text-sm text-muted">No trip requests found</li>
                 ) }
               </ul>
             </div>
 
             <div className="col-span-4">
               <div className="bg-gray-50 p-3 rounded">
-                <h3 className="font-semibold mb-2">Quick Actions</h3>
-                <div className="space-y-2 text-sm">
-                  <button onClick={()=> { const p = visible[0]; if(p){ handleApprove(p.id, 'AutoApprover', 'Bulk approve'); alert('Approved first visible request'); } else alert('No visible trip'); }} className="w-full px-3 py-2 bg-green-600 text-white rounded">Approve first</button>
-                  <button onClick={()=> { const p = visible[0]; if(p){ handleReject(p.id, 'AutoApprover', 'Bulk reject'); alert('Rejected first visible request'); } else alert('No visible trip'); }} className="w-full px-3 py-2 bg-red-50 text-red-600 rounded border">Reject first</button>
-                  <button onClick={()=> { const stats = trips.reduce((acc,t)=> { acc[t.status] = (acc[t.status]||0)+1; return acc; }, {}); alert('Counts: '+ JSON.stringify(stats)); }} className="w-full px-3 py-2 bg-white border rounded">Stats</button>
+                <h3 className="section-heading text-lg">Quick Actions</h3>
+                <div className="space-y-2 text-sm mt-3">
+                  <button onClick={()=> { const p = visible[0]; if(p){ handleApprove(p.id, 'AutoApprover', 'Bulk approve'); alert('Approved first visible request'); } else alert('No visible trip'); }} className="w-full btn btn-primary">Approve first</button>
+                  <button onClick={()=> { const p = visible[0]; if(p){ handleReject(p.id, 'AutoApprover', 'Bulk reject'); alert('Rejected first visible request'); } else alert('No visible trip'); }} className="w-full btn btn-outline text-red-600">Reject first</button>
+                  <button onClick={()=> { const stats = trips.reduce((acc,t)=> { acc[t.status] = (acc[t.status]||0)+1; return acc; }, {}); alert('Counts: '+ JSON.stringify(stats)); }} className="w-full btn btn-outline">Stats</button>
                 </div>
 
-                <div className="mt-4 text-xs text-gray-500">Filters are applied to the list. Use Details to manage a request.</div>
+                <div className="mt-4 text-xs text-muted">Filters are applied to the list. Use Details to manage a request.</div>
               </div>
 
-              <div className="mt-3 bg-white p-3 border rounded">
-                <h3 className="font-semibold mb-2">Notifications</h3>
-                <div className="text-sm text-gray-500">
+              <div className="mt-3 surface-card p-4">
+                <h3 className="section-heading text-lg">Notifications</h3>
+                <div className="section-subheading text-sm">
                   Sent notifications to requesters. Click to open email client.
                 </div>
                 <div className="mt-2 max-h-40 overflow-auto text-sm space-y-2">
-                  { notifications.length === 0 && <div className="text-xs text-gray-400">No notifications sent</div> }
+                  { notifications.length === 0 && <div className="text-xs text-muted uppercase tracking-wider">No notifications sent</div> }
                   { notifications.map(n => (
-                    <div key={n.id} className="p-2 border rounded flex items-center justify-between">
+                    <div key={n.id} className="rounded-xl border border-slate-200/70 bg-white/70 p-3 flex items-center justify-between">
                       <div className="truncate">
                         <div className="font-medium">{n.subject}</div>
-                        <div className="text-xs text-gray-400">to {n.to} • {new Date(n.ts).toLocaleString()}</div>
+                        <div className="text-xs text-muted uppercase tracking-wider">to {n.to} • {new Date(n.ts).toLocaleString()}</div>
                       </div>
                       <div className="flex gap-2">
-                        <a className="text-xs px-2 py-1 bg-white border rounded" href={`mailto:${n.to}?subject=${encodeURIComponent(n.subject)}&body=${encodeURIComponent(n.body)}`} target="_blank" rel="noreferrer">Open</a>
+                        <a className="btn btn-outline text-xs" href={`mailto:${n.to}?subject=${encodeURIComponent(n.subject)}&body=${encodeURIComponent(n.body)}`} target="_blank" rel="noreferrer">Open</a>
                       </div>
                     </div>
                   ))}
@@ -422,3 +450,4 @@ export default function Trips(){
     </div>
   );
 }
+

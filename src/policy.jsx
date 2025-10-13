@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 const LOCAL_KEY = "policy_builder_v1";
 const POLICIES_KEY = "policy_builder_v1_list";
@@ -91,6 +91,48 @@ function TabButton({ id, label, active, setActive, index, focusableIndex, setFoc
   );
 }
 
+function CollapsibleCard({ title, description, defaultOpen = true, children, badge }) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  return (
+    <div className="border border-gray-200 rounded-xl bg-white shadow-sm">
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-gray-50 transition"
+      >
+        <div>
+          <div className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+            {title}
+            {badge && <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs">{badge}</span>}
+          </div>
+          {description && <div className="text-xs text-gray-500 mt-0.5">{description}</div>}
+        </div>
+        <svg
+          className={`w-4 h-4 text-gray-400 transition-transform ${open ? "rotate-180" : ""}`}
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <path d="M5 7l5 5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+      {open && <div className="border-t border-gray-100 px-4 py-4">{children}</div>}
+    </div>
+  );
+}
+
+function EmptyState({ title, description, action }) {
+  return (
+    <div className="border border-dashed border-gray-300 rounded-lg p-4 text-center bg-white">
+      <div className="text-sm font-medium text-gray-700">{title}</div>
+      {description && <div className="text-xs text-gray-500 mt-1">{description}</div>}
+      {action && <div className="mt-2">{action}</div>}
+    </div>
+  );
+}
+
 export default function policy() {
   const navigate = useNavigate();
   // load from localStorage if exists
@@ -149,24 +191,38 @@ export default function policy() {
   const [previewTemplate, setPreviewTemplate] = useState(null);
   const [diffModalOpen, setDiffModalOpen] = useState(false);
   const [diffsForModal, setDiffsForModal] = useState([]);
+  const [lastSavedSnapshot, setLastSavedSnapshot] = useState(() => {
+    try {
+      return JSON.stringify(policy);
+    } catch {
+      return "";
+    }
+  });
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const previewRef = useRef(null);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  const activateTab = useCallback((id, focusIndex) => {
+    setActiveTab(id);
+    if (typeof focusIndex === "number") {
+      setFocusableIndex(focusIndex);
+    }
+    setMobileNavOpen(false);
+  }, []);
 
   // keyboard navigation for tabs
   function handleKeyDown(e) {
     const currentIndex = TABS.findIndex((t) => t.id === activeTab);
     if (e.key === "ArrowRight") {
       const next = (currentIndex + 1) % TABS.length;
-      setActiveTab(TABS[next].id);
-      setFocusableIndex(next);
+      activateTab(TABS[next].id, next);
     } else if (e.key === "ArrowLeft") {
       const prev = (currentIndex - 1 + TABS.length) % TABS.length;
-      setActiveTab(TABS[prev].id);
-      setFocusableIndex(prev);
+      activateTab(TABS[prev].id, prev);
     } else if (e.key === "Home") {
-      setActiveTab(TABS[0].id);
-      setFocusableIndex(0);
+      activateTab(TABS[0].id, 0);
     } else if (e.key === "End") {
-      setActiveTab(TABS[TABS.length - 1].id);
-      setFocusableIndex(TABS.length - 1);
+      activateTab(TABS[TABS.length - 1].id, TABS.length - 1);
     }
   }
 
@@ -181,6 +237,15 @@ export default function policy() {
     }, 350);
     return () => clearTimeout(id);
   }, [policy]);
+
+  useEffect(() => {
+    try {
+      const snapshot = JSON.stringify(policy);
+      setHasUnsavedChanges(snapshot !== lastSavedSnapshot);
+    } catch (e) {
+      setHasUnsavedChanges(true);
+    }
+  }, [policy, lastSavedSnapshot]);
 
   // ensure policies list contains the current policy on load
   useEffect(() => {
@@ -201,7 +266,15 @@ export default function policy() {
   useEffect(() => {
     if(!currentPolicyId) return;
     const found = policies.find(p => p.meta?.id === currentPolicyId);
-    if(found) setPolicy(JSON.parse(JSON.stringify(found)));
+    if(found) {
+      const next = JSON.parse(JSON.stringify(found));
+      setPolicy(next);
+      try {
+        const snap = JSON.stringify(next);
+        setLastSavedSnapshot(snap);
+        setHasUnsavedChanges(false);
+      } catch {}
+    }
   }, [currentPolicyId, policies]);
 
   function pushAudit(msg, user = "current-user") {
@@ -210,31 +283,49 @@ export default function policy() {
   }
 
   function savePolicy() {
-    setPolicy((p) => {
-      const updated = { ...p, meta: { ...p.meta, updated: new Date().toISOString() } };
-      // add version snapshot
-      try{
-        const snapshot = JSON.parse(JSON.stringify(updated));
-        snapshot.snapshotAt = new Date().toISOString();
-        updated.versions = [snapshot, ...(updated.versions || [])].slice(0, 20);
-      }catch{}
+    setPolicy((prev) => {
+      const timestamp = new Date().toISOString();
+      const auditEntry = { ts: timestamp, user: "current-user", msg: "Saved policy" };
+      const base = { ...prev, meta: { ...prev.meta, updated: timestamp } };
+      let versions = base.versions || [];
+      try {
+        const snapshot = JSON.parse(JSON.stringify(base));
+        snapshot.snapshotAt = timestamp;
+        versions = [snapshot, ...versions].slice(0, 20);
+      } catch (e) {
+        console.warn("Failed to snapshot policy", e);
+      }
 
-      // update policies list
-      setPolicies(prev => {
-        const exists = prev.find(x => x.meta?.id === updated.meta?.id);
-        let next;
-        if(exists){
-          next = prev.map(x => x.meta?.id === updated.meta?.id ? updated : x);
-        } else {
-          next = [updated, ...prev];
+      const updated = { ...base, versions, auditLog: [auditEntry, ...(base.auditLog || [])] };
+
+      setPolicies((prevPolicies) => {
+        const exists = prevPolicies.find((x) => x.meta?.id === updated.meta?.id);
+        const next = exists
+          ? prevPolicies.map((x) => (x.meta?.id === updated.meta?.id ? updated : x))
+          : [updated, ...prevPolicies];
+        try {
+          localStorage.setItem(POLICIES_KEY, JSON.stringify(next));
+        } catch (e) {
+          console.warn("Failed to persist policies list", e);
         }
-        try{ localStorage.setItem(POLICIES_KEY, JSON.stringify(next)); }catch{}
         return next;
       });
 
-      pushAudit("Saved policy");
-      try { localStorage.setItem(LOCAL_KEY, JSON.stringify(updated)); } catch (e) {}
+      try {
+        localStorage.setItem(LOCAL_KEY, JSON.stringify(updated));
+      } catch (e) {
+        console.warn("Failed to persist policy", e);
+      }
+
+      try {
+        setLastSavedSnapshot(JSON.stringify(updated));
+        setHasUnsavedChanges(false);
+      } catch (e) {
+        console.warn("Failed to update save snapshot", e);
+      }
+
       alert("Policy saved locally and added to policies list");
+
       return updated;
     });
   }
@@ -318,6 +409,26 @@ export default function policy() {
     setPolicy(defaultPolicy);
     pushAudit('Reset to default');
     alert('Policy reset to defaults');
+  }
+
+  const scrollToPreview = () => {
+    try {
+      previewRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    } catch (e) {
+      console.warn("Preview scroll failed", e);
+    }
+  };
+
+  function handleQuickCompare() {
+    const versions = policy.versions || [];
+    if (!versions.length) {
+      alert("Save a version before comparing.");
+      return;
+    }
+    const snapshot = versions[0];
+    const diffs = computeDiff(snapshot, policy);
+    setDiffsForModal(diffs);
+    setDiffModalOpen(true);
   }
 
   function exportPolicy() {
@@ -439,17 +550,37 @@ export default function policy() {
     },
   ];
 
+  const channelLabels = { email: "Email", sms: "SMS", slack: "Slack" };
+  const activeNotificationChannels = Object.entries(policy.notificationChannels || {})
+    .filter(([, enabled]) => enabled)
+    .map(([channel]) => channelLabels[channel] || channel);
+  const primaryApprover = policy.approvalWorkflows?.[0]?.steps?.[0] || "Not assigned";
+  const highRiskBadge = (policy.highRiskDestinations || []).length
+    ? `${policy.highRiskDestinations.length} high-risk`
+    : null;
+  const expenseCategories = Object.keys(policy.expenseLimits || {});
+  const savedTemplates = policy.templates || [];
+  const hasVersionHistory = (policy.versions || []).length > 0;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white p-8">
-      <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
+      <div className="max-w-7xl mx-auto surface-card overflow-hidden">
         <header className="flex items-center justify-between p-6 bg-gradient-to-r from-purple-700 to-purple-600 text-white">
           <div>
-            <h1 className="text-2xl font-semibold">Corporate Travel Policy Builder</h1>
+            <h1 className="section-heading text-3xl">Corporate Travel Policy Builder</h1>
             <div className="text-sm text-purple-200">Create, preview and manage travel policies</div>
           </div>
 
           <div className="flex items-center gap-3">
-            <button onClick={() => navigate(-1)} className="px-2 py-1 bg-white/10 hover:bg-white/20 rounded text-sm">← Back</button>
+            <button
+              onClick={() => setMobileNavOpen((prev) => !prev)}
+              className="xl:hidden px-3 py-2 bg-white/10 hover:bg-white/20 rounded text-sm"
+              aria-expanded={mobileNavOpen}
+              aria-controls="policy-nav-panel"
+            >
+              {mobileNavOpen ? "Close Menu" : "Open Menu"}
+            </button>
+            <button onClick={() => navigate(-1)} className="px-2 py-1 bg-white/10 hover:bg-white/20 rounded text-sm">Back</button>
             <ThemeToggle />
             <button
               onClick={savePolicy}
@@ -479,9 +610,22 @@ export default function policy() {
           </div>
         </header>
 
-        <div className="p-6 grid grid-cols-12 gap-6">
-          <aside className="col-span-3 bg-gray-50 rounded-lg p-4 sticky top-6 h-fit">
-            <div className="mb-4">Policies</div>
+        {mobileNavOpen && (
+          <div
+            className="fixed inset-0 z-40 bg-black/40 xl:hidden"
+            onClick={() => setMobileNavOpen(false)}
+          />
+        )}
+
+        <div className="relative p-6 grid grid-cols-1 xl:grid-cols-12 gap-6">
+          <aside
+            id="policy-nav-panel"
+            className={`xl:col-span-3 order-2 xl:order-1 ${mobileNavOpen ? "block" : "hidden"} xl:block xl:static ${
+              mobileNavOpen ? "absolute left-4 right-4 top-4 z-50" : ""
+            }`}
+          >
+            <div className="bg-gray-50 rounded-lg p-4 xl:sticky xl:top-6 max-h-[80vh] overflow-y-auto">
+              <div className="mb-4">Policies</div>
             <div className="mb-3">
               <select className="w-full border rounded p-2" value={currentPolicyId} onChange={(e)=> setCurrentPolicyId(e.target.value)}>
                 {policies.map(p => (<option key={p.meta.id} value={p.meta.id}>{p.meta.name}</option>))}
@@ -492,10 +636,10 @@ export default function policy() {
                 <button className="px-2 py-1 bg-red-50 text-red-600 border rounded" onClick={()=> deletePolicy(policy.meta?.id)}>Delete</button>
               </div>
             </div>
-            <div className="mb-4">Tabs (use ← → Home End)</div>
+            <div className="mb-4">Tabs (use Left/Right Home End)</div>
             <div role="tablist" aria-label="Policy Tabs" onKeyDown={handleKeyDown} className="flex flex-col gap-2">
               {TABS.map((t, i) => (
-                <TabButton key={t.id} id={t.id} label={t.label} active={activeTab} setActive={setActiveTab} index={i} focusableIndex={focusableIndex} setFocusableIndex={setFocusableIndex} />
+                <TabButton key={t.id} id={t.id} label={t.label} active={activeTab} setActive={activateTab} index={i} focusableIndex={focusableIndex} setFocusableIndex={setFocusableIndex} />
               ))}
             </div>
 
@@ -511,166 +655,514 @@ export default function policy() {
                 </button>
               </div>
             </div>
+            </div>
           </aside>
 
-          <main className="col-span-6">
+          <main className="order-1 xl:order-2 xl:col-span-6 space-y-6">
+            <section className="bg-white/90 border border-purple-100 rounded-2xl p-6 shadow-sm">
+              <div className="flex flex-wrap items-start justify-between gap-6">
+                <div>
+                  <div className="text-xs uppercase tracking-wide text-purple-500">Active Policy</div>
+                  <div className="flex flex-wrap items-center gap-3 mt-2">
+                    <h2 className="text-xl font-semibold text-gray-900">{policy.meta?.name || "Untitled policy"}</h2>
+                    <Chip>{hasUnsavedChanges ? "Draft (unsaved changes)" : "Saved"}</Chip>
+                    {highRiskBadge && <Chip>{highRiskBadge}</Chip>}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-2">
+                    Last updated&nbsp;
+                    {policy.meta?.updated ? new Date(policy.meta.updated).toLocaleString() : "Not saved yet"}
+                  </div>
+                  <div className="mt-3 text-xs text-gray-500 max-w-xl">
+                    Keep policy owners aligned by tracking assignments and approvals at a glance. Use the cards below to
+                    fine tune booking rules, safety constraints, and communications.
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm sm:min-w-[260px]">
+                  <div>
+                    <div className="text-xs text-gray-500 uppercase">Primary Approver</div>
+                    <div className="font-medium text-gray-900">{primaryApprover}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-500 uppercase">Budget Limit</div>
+                    <div className="font-medium text-gray-900">
+                      {policy.budgetLimit ? `$${policy.budgetLimit}` : "No limit defined"}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-500 uppercase">Notifications</div>
+                    <div className="font-medium text-gray-900">
+                      {activeNotificationChannels.length ? activeNotificationChannels.join(", ") : "No channels"}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-500 uppercase">Region Coverage</div>
+                    <div className="font-medium text-gray-900">{policy.region || "All regions"}</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
             {/* Panels */}
             <div className="space-y-6">
               {activeTab === "guidelines" && (
-                <section className="bg-white rounded-lg p-6 shadow-sm transition-transform transform hover:-translate-y-0.5">
+                <section className="surface-card p-6 transition-transform transform hover:-translate-y-0.5">
                   <h2 className="text-lg font-semibold mb-4">Travel Guidelines</h2>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium">Booking Class</label>
-                      <select className="w-full border rounded p-2" value={policy.bookingClass} onChange={(e) => setPolicy({ ...policy, bookingClass: e.target.value })}>
-                        <option>Economy Only</option>
-                        <option>Business Allowed</option>
-                        <option>First Class Allowed</option>
-                      </select>
-                    </div>
+                  <div className="space-y-4">
+                    <CollapsibleCard
+                      title="Trip basics"
+                      description="Set default booking class, spending guardrails, and lead time expectations."
+                    >
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700">
+                            Booking Class
+                            <span className="block text-xs font-normal text-gray-500">
+                              Choose the standard travel cabin for this policy.
+                            </span>
+                          </label>
+                          <select
+                            className="w-full border rounded p-2 mt-1"
+                            value={policy.bookingClass}
+                            onChange={(e) => setPolicy({ ...policy, bookingClass: e.target.value })}
+                          >
+                            <option>Economy Only</option>
+                            <option>Business Allowed</option>
+                            <option>First Class Allowed</option>
+                          </select>
+                        </div>
 
-                    <div>
-                      <label className="block text-sm font-medium">Budget Limit (USD)</label>
-                      <input type="number" className="w-full border rounded p-2" value={policy.budgetLimit} onChange={(e) => setPolicy({ ...policy, budgetLimit: e.target.value })} />
-                    </div>
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700">
+                            Budget Limit (USD)
+                            <span className="block text-xs font-normal text-gray-500">
+                              Keep it empty if travellers can expense beyond a baseline.
+                            </span>
+                          </label>
+                          <input
+                            type="number"
+                            className="w-full border rounded p-2 mt-1"
+                            value={policy.budgetLimit}
+                            onChange={(e) => setPolicy({ ...policy, budgetLimit: e.target.value })}
+                            placeholder="Example: 1500"
+                          />
+                        </div>
 
-                    <div className="col-span-2">
-                      <label className="block text-sm font-medium">Preferred Airlines (comma separated)</label>
-                      <input className="w-full border rounded p-2" value={policy.preferredAirlines.join(",")} onChange={(e) => setPolicy({ ...policy, preferredAirlines: e.target.value.split(",").map(s=>s.trim()).filter(Boolean) })} />
-                    </div>
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700">
+                            Advance Booking Rule (days)
+                            <span className="block text-xs font-normal text-gray-500">
+                              Encourage early planning to unlock better fares.
+                            </span>
+                          </label>
+                          <input
+                            type="number"
+                            className="w-full border rounded p-2 mt-1"
+                            value={policy.advanceBookingDays}
+                            onChange={(e) => setPolicy({ ...policy, advanceBookingDays: Number(e.target.value) })}
+                            min={0}
+                          />
+                        </div>
 
-                    <div className="col-span-2">
-                      <label className="block text-sm font-medium">Preferred Hotels (comma separated)</label>
-                      <input className="w-full border rounded p-2" value={policy.preferredHotels.join(",")} onChange={(e) => setPolicy({ ...policy, preferredHotels: e.target.value.split(",").map(s=>s.trim()).filter(Boolean) })} />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium">Department</label>
-                      <input className="w-full border rounded p-2" value={policy.department || ''} onChange={(e)=> setPolicy({...policy, department: e.target.value})} placeholder="e.g. Sales, Engineering" />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium">Region</label>
-                      <input className="w-full border rounded p-2" value={policy.region || ''} onChange={(e)=> setPolicy({...policy, region: e.target.value})} placeholder="e.g. EMEA, APAC" />
-                    </div>
-
-                    <div className="col-span-2">
-                      <label className="block text-sm font-medium">Assigned Groups (comma separated)</label>
-                      <input className="w-full border rounded p-2" value={(policy.assignedGroups||[]).join(',')} onChange={(e)=> setPolicy({...policy, assignedGroups: e.target.value.split(',').map(s=>s.trim()).filter(Boolean) })} placeholder="e.g. Engineers, Sales Team" />
-                    </div>
-
-                    <div className="col-span-2">
-                      <label className="block text-sm font-medium">Cost Centers (comma separated)</label>
-                      <input className="w-full border rounded p-2" value={(policy.costCenters||[]).join(',')} onChange={(e)=> setPolicy({...policy, costCenters: e.target.value.split(',').map(s=>s.trim()).filter(Boolean) })} placeholder="e.g. CC1001, CC2002" />
-                    </div>
-
-                    <div className="col-span-2">
-                      <label className="block text-sm font-medium">Risk approval rule</label>
-                      <div className="flex gap-2 items-center mt-2">
-                        <label className="flex items-center gap-2"><input type="radio" name="risk-mode" checked={(policy.riskApproval?.mode || 'manual') === 'manual'} onChange={()=> setPolicy(p=>({...p, riskApproval:{...p.riskApproval, mode:'manual'}}))} /> Manual</label>
-                        <label className="flex items-center gap-2"><input type="radio" name="risk-mode" checked={(policy.riskApproval?.mode || '') === 'auto'} onChange={()=> setPolicy(p=>({...p, riskApproval:{...p.riskApproval, mode:'auto'}}))} /> Auto</label>
-                        <input className="border rounded p-2 ml-2" style={{width:120}} placeholder="Auto threshold" value={policy.riskApproval?.autoThreshold || ''} onChange={(e)=> setPolicy(p=>({...p, riskApproval:{...p.riskApproval, autoThreshold: e.target.value}}))} />
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700">
+                            Policy Name
+                            <span className="block text-xs font-normal text-gray-500">
+                              Use a descriptive title, e.g. "EMEA Sales Travel 2024".
+                            </span>
+                          </label>
+                          <input
+                            className="w-full border rounded p-2 mt-1"
+                            value={policy.meta?.name || ""}
+                            onChange={(e) =>
+                              setPolicy({ ...policy, meta: { ...(policy.meta || {}), name: e.target.value } })
+                            }
+                            placeholder="Name your policy"
+                          />
+                        </div>
                       </div>
-                    </div>
+                    </CollapsibleCard>
 
-                    <div>
-                      <label className="block text-sm font-medium">Advance Booking Rule (days)</label>
-                      <input type="number" className="w-full border rounded p-2" value={policy.advanceBookingDays} onChange={(e) => setPolicy({ ...policy, advanceBookingDays: Number(e.target.value) })} />
-                    </div>
+                    <CollapsibleCard
+                      title="Preferred suppliers"
+                      description="Highlight suppliers that keep costs predictable and compliant."
+                    >
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="col-span-2">
+                          <label className="block text-sm font-semibold text-gray-700">
+                            Preferred Airlines
+                            <span className="block text-xs font-normal text-gray-500">
+                              Comma separated list. Travellers will see these first.
+                            </span>
+                          </label>
+                          <input
+                            className="w-full border rounded p-2 mt-1"
+                            value={policy.preferredAirlines.join(",")}
+                            onChange={(e) =>
+                              setPolicy({
+                                ...policy,
+                                preferredAirlines: e.target.value.split(",").map((s) => s.trim()).filter(Boolean),
+                              })
+                            }
+                            placeholder="e.g. Delta, Lufthansa, Singapore Airlines"
+                          />
+                        </div>
 
-                    <div>
-                      <label className="block text-sm font-medium">Policy name</label>
-                      <input className="w-full border rounded p-2" value={policy.meta?.name || ""} onChange={(e) => setPolicy({ ...policy, meta: { ...(policy.meta||{}), name: e.target.value } })} />
-                    </div>
+                        <div className="col-span-2">
+                          <label className="block text-sm font-semibold text-gray-700">
+                            Preferred Hotels
+                            <span className="block text-xs font-normal text-gray-500">
+                              Comma separated list. Ideal for negotiated rates.
+                            </span>
+                          </label>
+                          <input
+                            className="w-full border rounded p-2 mt-1"
+                            value={policy.preferredHotels.join(",")}
+                            onChange={(e) =>
+                              setPolicy({
+                                ...policy,
+                                preferredHotels: e.target.value.split(",").map((s) => s.trim()).filter(Boolean),
+                              })
+                            }
+                            placeholder="e.g. Marriott, Hyatt"
+                          />
+                        </div>
+                      </div>
+                    </CollapsibleCard>
+
+                    <CollapsibleCard
+                      title="Assignments & eligibility"
+                      description="Target who can use this policy to prevent accidental bookings."
+                    >
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700">
+                            Department
+                            <span className="block text-xs font-normal text-gray-500">
+                              Hint: add multiple policies per department where needed.
+                            </span>
+                          </label>
+                          <input
+                            className="w-full border rounded p-2 mt-1"
+                            value={policy.department || ""}
+                            onChange={(e) => setPolicy({ ...policy, department: e.target.value })}
+                            placeholder="e.g. Sales, Engineering"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700">
+                            Primary Region
+                            <span className="block text-xs font-normal text-gray-500">
+                              Helps surface local advisories and currency defaults.
+                            </span>
+                          </label>
+                          <input
+                            className="w-full border rounded p-2 mt-1"
+                            value={policy.region || ""}
+                            onChange={(e) => setPolicy({ ...policy, region: e.target.value })}
+                            placeholder="e.g. EMEA, APAC"
+                          />
+                        </div>
+
+                        <div className="col-span-2">
+                          <label className="block text-sm font-semibold text-gray-700">
+                            Assigned Groups
+                            <span className="block text-xs font-normal text-gray-500">
+                              Comma separated. Helpful for pilot groups or cost-aware cohorts.
+                            </span>
+                          </label>
+                          <input
+                            className="w-full border rounded p-2 mt-1"
+                            value={(policy.assignedGroups || []).join(",")}
+                            onChange={(e) =>
+                              setPolicy({
+                                ...policy,
+                                assignedGroups: e.target.value.split(",").map((s) => s.trim()).filter(Boolean),
+                              })
+                            }
+                            placeholder="e.g. Field Engineers, SDR Team"
+                          />
+                        </div>
+
+                        <div className="col-span-2">
+                          <label className="block text-sm font-semibold text-gray-700">
+                            Cost Centers
+                            <span className="block text-xs font-normal text-gray-500">
+                              Match finance reporting codes to keep expenses reconciled.
+                            </span>
+                          </label>
+                          <input
+                            className="w-full border rounded p-2 mt-1"
+                            value={(policy.costCenters || []).join(",")}
+                            onChange={(e) =>
+                              setPolicy({
+                                ...policy,
+                                costCenters: e.target.value.split(",").map((s) => s.trim()).filter(Boolean),
+                              })
+                            }
+                            placeholder="e.g. CC1001, CC2002"
+                          />
+                        </div>
+                      </div>
+                    </CollapsibleCard>
+
+                    <CollapsibleCard
+                      title="Risk rules"
+                      description="Flag risky trips for manual review or automate approvals based on spend."
+                      badge={policy.riskApproval?.mode === "auto" ? "Auto" : "Manual"}
+                    >
+                      <div className="flex flex-col gap-3">
+                        <div className="flex flex-wrap gap-4 items-center">
+                          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                            <input
+                              type="radio"
+                              name="risk-mode"
+                              checked={(policy.riskApproval?.mode || "manual") === "manual"}
+                              onChange={() =>
+                                setPolicy((p) => ({ ...p, riskApproval: { ...(p.riskApproval || {}), mode: "manual" } }))
+                              }
+                            />
+                            Manual review
+                          </label>
+                          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                            <input
+                              type="radio"
+                              name="risk-mode"
+                              checked={(policy.riskApproval?.mode || "") === "auto"}
+                              onChange={() =>
+                                setPolicy((p) => ({ ...p, riskApproval: { ...(p.riskApproval || {}), mode: "auto" } }))
+                              }
+                            />
+                            Auto-approve
+                          </label>
+                        </div>
+                        <div className="flex flex-wrap gap-3 items-center">
+                          <input
+                            className="border rounded p-2 w-40"
+                            placeholder="Auto threshold"
+                            value={policy.riskApproval?.autoThreshold || ""}
+                            onChange={(e) =>
+                              setPolicy((p) => ({
+                                ...p,
+                                riskApproval: { ...(p.riskApproval || {}), autoThreshold: e.target.value },
+                              }))
+                            }
+                          />
+                          <span className="text-xs text-gray-500">
+                            Example: auto-approve trips under $500 or domestic routes only.
+                          </span>
+                        </div>
+                      </div>
+                    </CollapsibleCard>
                   </div>
                 </section>
               )}
 
               {activeTab === "safety" && (
-                <section className="bg-white rounded-lg p-6 shadow-sm">
+                <section className="surface-card p-6">
                   <h2 className="text-lg font-semibold mb-4">Safety Rules</h2>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="col-span-2 text-xs text-gray-500">
+                      Create safeguards for risky destinations and keep teams aligned in case of emergencies.
+                    </div>
                     <label className="flex items-center gap-2">
                       <input type="checkbox" checked={policy.mandatoryInsurance} onChange={(e) => setPolicy({ ...policy, mandatoryInsurance: e.target.checked })} />
-                      <span>Mandatory Insurance</span>
+                      <span className="text-sm font-medium text-gray-700">Mandatory Insurance</span>
                     </label>
 
                     <div>
-                      <label className="block text-sm font-medium">High-risk Destinations (comma separated)</label>
-                      <input className="w-full border rounded p-2" value={policy.highRiskDestinations.join(",")} onChange={(e) => setPolicy({ ...policy, highRiskDestinations: e.target.value.split(",").map(s=>s.trim()).filter(Boolean) })} />
+                      <label className="block text-sm font-semibold text-gray-700">
+                        High-risk Destinations
+                        <span className="block text-xs text-gray-500 font-normal">Comma separated list for extra approvals.</span>
+                      </label>
+                      <input className="w-full border rounded p-2 mt-1" value={policy.highRiskDestinations.join(",")} onChange={(e) => setPolicy({ ...policy, highRiskDestinations: e.target.value.split(",").map(s=>s.trim()).filter(Boolean) })} placeholder="e.g. Kabul, Kyiv" />
                     </div>
 
                     <div className="col-span-2">
-                      <label className="block text-sm font-medium">Emergency Contacts</label>
-                      <textarea className="w-full border rounded p-2" rows={3} value={policy.emergencyContacts} onChange={(e) => setPolicy({ ...policy, emergencyContacts: e.target.value })} />
+                      <label className="block text-sm font-semibold text-gray-700">
+                        Emergency Contacts
+                        <span className="block text-xs text-gray-500 font-normal">Provide phone numbers or hotlines travellers can reach 24/7.</span>
+                      </label>
+                      <textarea className="w-full border rounded p-2 mt-1" rows={3} value={policy.emergencyContacts} onChange={(e) => setPolicy({ ...policy, emergencyContacts: e.target.value })} />
                     </div>
 
                     <div className="col-span-2">
-                      <label className="block text-sm font-medium">Travel Advisories Feed URL</label>
-                      <input className="w-full border rounded p-2" value={policy.advisoriesUrl} onChange={(e) => setPolicy({ ...policy, advisoriesUrl: e.target.value })} />
+                      <label className="block text-sm font-semibold text-gray-700">
+                        Travel Advisories Feed URL
+                        <span className="block text-xs text-gray-500 font-normal">Link to government or insurance advisories to surface live alerts.</span>
+                      </label>
+                      <input className="w-full border rounded p-2 mt-1" value={policy.advisoriesUrl} onChange={(e) => setPolicy({ ...policy, advisoriesUrl: e.target.value })} placeholder="https://travel.state.gov/..." />
                     </div>
                   </div>
                 </section>
               )}
 
               {activeTab === "workflow" && (
-                <section className="bg-white rounded-lg p-6 shadow-sm">
+                <section className="surface-card p-6">
                   <h2 className="text-lg font-semibold mb-4">Approval Workflows</h2>
                   <div className="space-y-3">
-                    {policy.approvalWorkflows.map((wf) => (
-                      <div key={wf.id} className="p-3 border rounded flex items-center justify-between">
-                        <div>
-                          <div className="font-medium">{wf.name}</div>
-                          <div className="text-xs text-gray-500">Steps: {wf.steps.join(' → ')}</div>
+                    {(!policy.approvalWorkflows || policy.approvalWorkflows.length === 0) && (
+                      <EmptyState
+                        title="No workflows yet"
+                        description="Set up at least one approval path to keep requests compliant."
+                        action={
+                          <button
+                            onClick={handleAddWorkflow}
+                            className="px-3 py-2 bg-purple-700 text-white rounded text-sm shadow-sm"
+                          >
+                            Add first workflow
+                          </button>
+                        }
+                      />
+                    )}
+                    {policy.approvalWorkflows.map((wf) => {
+                      const steps = Array.isArray(wf.steps) ? wf.steps : [];
+                      return (
+                        <div
+                          key={wf.id}
+                          className="p-3 border rounded flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
+                        >
+                          <div>
+                            <div className="font-medium">{wf.name}</div>
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {steps.map((step, idx) => (
+                                <span
+                                  key={idx}
+                                  className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium"
+                                >
+                                  {idx + 1}. {step}
+                                </span>
+                              ))}
+                              {!steps.length && (
+                                <span className="text-xs text-gray-500">No approvers yet - add a step.</span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            <button
+                              onClick={() => {
+                                const name = prompt('Rename workflow', wf.name);
+                                if (name) {
+                                  setPolicy((p) => ({
+                                    ...p,
+                                    approvalWorkflows: p.approvalWorkflows.map((x) =>
+                                      x.id === wf.id ? { ...x, name } : x
+                                    ),
+                                  }));
+                                }
+                              }}
+                              className="text-sm px-3 py-1 bg-gray-100 rounded"
+                            >
+                              Rename
+                            </button>
+                            <button
+                              onClick={() => {
+                                const step = prompt('Add step (role or person)');
+                                if (step) {
+                                  setPolicy((p) => ({
+                                    ...p,
+                                    approvalWorkflows: p.approvalWorkflows.map((x) =>
+                                      x.id === wf.id ? { ...x, steps: [...(x.steps || []), step] } : x
+                                    ),
+                                  }));
+                                }
+                              }}
+                              className="text-sm px-3 py-1 bg-gray-100 rounded"
+                            >
+                              Add Step
+                            </button>
+                            <button
+                              onClick={() =>
+                                setPolicy((p) => ({
+                                  ...p,
+                                  approvalWorkflows: p.approvalWorkflows.filter((x) => x.id !== wf.id),
+                                }))
+                              }
+                              className="text-sm px-3 py-1 bg-red-50 text-red-600 rounded"
+                            >
+                              Remove
+                            </button>
+                          </div>
                         </div>
-                        <div className="flex gap-2">
-                          <button onClick={() => {
-                            const name = prompt('Rename workflow', wf.name);
-                            if (name) setPolicy(p=>({ ...p, approvalWorkflows: p.approvalWorkflows.map(x=> x.id===wf.id?{...x,name}:x) }));
-                          }} className="text-sm px-3 py-1 bg-gray-100 rounded">Rename</button>
-                          <button onClick={() => setPolicy(p=>({ ...p, approvalWorkflows: p.approvalWorkflows.filter(x=>x.id!==wf.id) }))} className="text-sm px-3 py-1 bg-red-50 text-red-600 rounded">Delete</button>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
 
                     <div className="flex gap-2">
                       <input id="new-wf" placeholder="New workflow name" className="border rounded p-2 flex-1" />
-                      <button onClick={() => { const el = document.getElementById('new-wf'); if(el && el.value.trim()) addWorkflow(el.value.trim()); if(el) el.value=''; }} className="px-3 py-2 bg-purple-700 text-white rounded">Add</button>
+                      <button
+                        onClick={() => {
+                          const el = document.getElementById('new-wf');
+                          if (el && el.value.trim()) {
+                            addWorkflow(el.value.trim());
+                          }
+                          if (el) {
+                            el.value = '';
+                          }
+                        }}
+                        className="px-3 py-2 bg-purple-700 text-white rounded"
+                      >
+                        Add
+                      </button>
                     </div>
                   </div>
                 </section>
               )}
-
               {activeTab === "notifications" && (
-                <section className="bg-white rounded-lg p-6 shadow-sm">
+                <section className="surface-card p-6">
                   <h2 className="text-lg font-semibold mb-4">Notifications</h2>
-                  <div className="grid grid-cols-2 gap-4">
-                    <label className="flex items-center gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="col-span-2 text-xs text-gray-500">
+                      Choose how travellers, managers, and finance get notified when trips move through approvals.
+                    </div>
+                    <label className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded px-3 py-2">
                       <input type="checkbox" checked={policy.notificationChannels.email} onChange={(e)=> setPolicy({...policy, notificationChannels: {...policy.notificationChannels, email: e.target.checked}})} />
-                      <span>Email</span>
+                      <div>
+                        <div className="text-sm font-medium">Email</div>
+                        <div className="text-xs text-gray-500">Best for detailed itineraries and receipts.</div>
+                      </div>
                     </label>
-                    <label className="flex items-center gap-2">
+                    <label className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded px-3 py-2">
                       <input type="checkbox" checked={policy.notificationChannels.sms} onChange={(e)=> setPolicy({...policy, notificationChannels: {...policy.notificationChannels, sms: e.target.checked}})} />
-                      <span>SMS</span>
+                      <div>
+                        <div className="text-sm font-medium">SMS</div>
+                        <div className="text-xs text-gray-500">Send concise alerts for urgent travel changes.</div>
+                      </div>
                     </label>
-                    <label className="flex items-center gap-2">
+                    <label className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded px-3 py-2">
                       <input type="checkbox" checked={policy.notificationChannels.slack} onChange={(e)=> setPolicy({...policy, notificationChannels: {...policy.notificationChannels, slack: e.target.checked}})} />
-                      <span>Slack</span>
+                      <div>
+                        <div className="text-sm font-medium">Slack</div>
+                        <div className="text-xs text-gray-500">Keep approvals flowing in your daily channels.</div>
+                      </div>
                     </label>
 
                     <div className="col-span-2">
-                      <label className="block text-sm font-medium">Notification Emails</label>
-                      <input className="w-full border rounded p-2" value={policy.notificationEmails} onChange={(e)=> setPolicy({...policy, notificationEmails: e.target.value})} placeholder="comma separated" />
+                      <label className="block text-sm font-medium">
+                        Notification Emails
+                        <span className="block text-xs text-gray-500 font-normal mt-1">
+                          Add shared inboxes or finance aliases (comma separated).
+                        </span>
+                      </label>
+                      <input className="w-full border rounded p-2 mt-1" value={policy.notificationEmails} onChange={(e)=> setPolicy({...policy, notificationEmails: e.target.value})} placeholder="e.g. travelops@company.com, finance@company.com" />
                     </div>
                   </div>
                 </section>
               )}
 
               {activeTab === "expenses" && (
-                <section className="bg-white rounded-lg p-6 shadow-sm">
+                <section className="surface-card p-6">
                   <h2 className="text-lg font-semibold mb-4">Expense Categories & Limits</h2>
                   <div className="grid grid-cols-3 gap-3">
-                    {Object.keys(policy.expenseLimits).map((k)=> (
+                    {expenseCategories.length === 0 && (
+                      <div className="col-span-3">
+                        <EmptyState
+                          title="No categories yet"
+                          description="Add spending buckets like Meals or Transport so teams know their guardrails."
+                        />
+                      </div>
+                    )}
+                    {expenseCategories.map((k)=> (
                       <div key={k} className="p-3 border rounded">
                         <div className="flex items-center justify-between">
                           <div className="font-medium">{k}</div>
@@ -682,66 +1174,126 @@ export default function policy() {
 
                     <div className="col-span-3 flex gap-2">
                       <input id="new-exp" placeholder="New category name" className="border rounded p-2 flex-1" />
-                      <button onClick={()=>{ const el=document.getElementById('new-exp'); if(el && el.value.trim()) { addExpenseCategory(el.value.trim()); el.value=''; } }} className="px-3 py-2 bg-purple-700 text-white rounded">Add</button>
+                      <button onClick={()=>{
+                        const el=document.getElementById('new-exp');
+                        if(!el) return;
+                        const name = el.value.trim();
+                        if(name){
+                          addExpenseCategory(name);
+                          el.value='';
+                        }
+                      }} className="px-3 py-2 bg-purple-700 text-white rounded">Add</button>
                     </div>
                   </div>
                 </section>
               )}
 
               {activeTab === "roles" && (
-                <section className="bg-white rounded-lg p-6 shadow-sm">
+                <section className="surface-card p-6">
                   <h2 className="text-lg font-semibold mb-4">Role-Based Access</h2>
                   <div className="space-y-3">
-                    {policy.roles.map((r, idx)=> (
-                      <div key={idx} className="p-3 border rounded flex items-center justify-between">
+                    {(!policy.roles || policy.roles.length === 0) && (
+                      <EmptyState
+                        title="No roles assigned"
+                        description="Map roles to permissions so employees know what they can do inside the travel portal."
+                      />
+                    )}
+                    {policy.roles.map((r, idx) => (
+                      <div key={idx} className="p-3 border rounded flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                         <div>
                           <div className="font-medium">{r.role}</div>
-                          <div className="text-xs text-gray-500">Permissions: {r.permissions.join(', ')}</div>
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {r.permissions.map((perm, i) => (
+                              <span key={i} className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs">{perm}</span>
+                            ))}
+                          </div>
                         </div>
                         <div className="flex gap-2">
-                          <button onClick={()=> { const name=prompt('Role name', r.role); if(name) setPolicy(p=>({ ...p, roles: p.roles.map((x,i)=> i===idx?{...x,role:name}:x) })); }} className="text-sm px-3 py-1 bg-gray-100 rounded">Edit</button>
-                          <button onClick={()=> setPolicy(p=> ({ ...p, roles: p.roles.filter((_,i)=> i!==idx) }))} className="text-sm px-3 py-1 bg-red-50 text-red-600 rounded">Remove</button>
+                          <button
+                            onClick={() => {
+                              const name = prompt('Role name', r.role);
+                              if (name) {
+                                setPolicy((p) => ({
+                                  ...p,
+                                  roles: p.roles.map((x, i) => (i === idx ? { ...x, role: name } : x)),
+                                }));
+                              }
+                            }}
+                            className="text-sm px-3 py-1 bg-gray-100 rounded"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() =>
+                              setPolicy((p) => ({
+                                ...p,
+                                roles: p.roles.filter((_, i) => i !== idx),
+                              }))
+                            }
+                            className="text-sm px-3 py-1 bg-red-50 text-red-600 rounded"
+                          >
+                            Remove
+                          </button>
                         </div>
                       </div>
                     ))}
 
                     <div className="flex gap-2">
                       <input id="new-role" placeholder="Role name" className="border rounded p-2 flex-1" />
-                      <button onClick={()=>{ const el=document.getElementById('new-role'); if(el && el.value.trim()) { setPolicy(p=> ({ ...p, roles: [...p.roles, { role: el.value.trim(), permissions: ['view'] }] })); el.value=''; pushAudit(`Added role ${el.value.trim()}`); } }} className="px-3 py-2 bg-purple-700 text-white rounded">Add Role</button>
+                      <button
+                        onClick={() => {
+                          const el = document.getElementById('new-role');
+                          if (!el) return;
+                          const name = el.value.trim();
+                          if (name) {
+                            setPolicy((p) => ({ ...p, roles: [...p.roles, { role: name, permissions: ['view'] }] }));
+                            pushAudit(`Added role ${name}`);
+                            el.value = '';
+                          }
+                        }}
+                        className="px-3 py-2 bg-purple-700 text-white rounded"
+                      >
+                        Add Role
+                      </button>
                     </div>
                   </div>
                 </section>
               )}
-
               {activeTab === "audit" && (
-                <section className="bg-white rounded-lg p-6 shadow-sm">
+                <section className="surface-card p-6">
                   <h2 className="text-lg font-semibold mb-4">Audit & Versioning</h2>
                   <div className="space-y-3">
                     <div className="text-sm text-gray-500">Most recent changes (click rollback to simulate)</div>
-                    <ul className="space-y-2">
-                      {policy.auditLog.map((a, i)=> (
-                        <li key={i} className="p-3 border rounded flex items-center justify-between">
-                          <div>
-                            <div className="text-xs text-gray-500">{new Date(a.ts).toLocaleString()}</div>
-                            <div className="font-medium">{a.msg}</div>
-                            <div className="text-xs text-gray-500">by {a.user}</div>
-                          </div>
-                          <div className="flex gap-2">
-                            <button onClick={()=> rollbackAudit(i)} className="text-sm px-3 py-1 bg-yellow-50 text-yellow-700 rounded">Rollback</button>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
+                    {(!policy.auditLog || policy.auditLog.length === 0) ? (
+                      <EmptyState
+                        title="No activity yet"
+                        description="Save the policy or import updates to build an audit trail your compliance team can trust."
+                      />
+                    ) : (
+                      <ul className="space-y-2">
+                        {policy.auditLog.map((a, i) => (
+                          <li key={i} className="p-3 border rounded flex items-center justify-between">
+                            <div>
+                              <div className="text-xs text-gray-500">{new Date(a.ts).toLocaleString()}</div>
+                              <div className="font-medium">{a.msg}</div>
+                              <div className="text-xs text-gray-500">by {a.user}</div>
+                            </div>
+                            <div className="flex gap-2">
+                              <button onClick={() => rollbackAudit(i)} className="text-sm px-3 py-1 bg-yellow-50 text-yellow-700 rounded">Rollback</button>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 </section>
               )}
-
               {activeTab === "templates" && (
-                <section className="bg-white rounded-lg p-6 shadow-sm">
+                <section className="surface-card p-6">
                   <h2 className="text-lg font-semibold mb-4">Templates</h2>
                   <div className="grid grid-cols-3 gap-4">
                     {templateExamples.map((tpl)=> (
-                      <div key={tpl.meta.name} className="p-4 border rounded hover:shadow cursor-pointer">
+                      <div key={tpl.meta.name} className="p-4 border rounded hover:shadow cursor-pointer transition">
                         <div className="font-medium">{tpl.meta.name}</div>
                         <div className="text-xs text-gray-500">Budget ${tpl.budgetLimit || 'n/a'}</div>
                         <div className="mt-3 flex gap-2">
@@ -751,10 +1303,48 @@ export default function policy() {
                       </div>
                     ))}
 
-                    <div className="p-4 border rounded col-span-3">
+                    <div className="col-span-3 space-y-3">
+                      <h3 className="text-sm font-semibold text-gray-700">Your saved templates</h3>
+                      {savedTemplates.length === 0 ? (
+                        <EmptyState
+                          title="No saved templates yet"
+                          description="Capture your favourite policy setups so you can reapply them in a single click."
+                        />
+                      ) : (
+                        <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-3">
+                          {savedTemplates.map((tpl, idx) => (
+                            <div key={idx} className="p-4 border rounded bg-white shadow-sm flex flex-col gap-3">
+                              <div>
+                                <div className="text-sm font-medium">{tpl.meta?.name || `Template ${idx + 1}`}</div>
+                                <div className="text-xs text-gray-500">
+                                  Updated {tpl.meta?.updated ? new Date(tpl.meta.updated).toLocaleDateString() : 'recently'}
+                                </div>
+                              </div>
+                              <div className="flex gap-2">
+                                <button onClick={()=> loadTemplate(tpl)} className="px-3 py-1 bg-purple-700 text-white rounded text-sm flex-1">Load</button>
+                                <button onClick={()=> openTemplatePreview(tpl)} className="px-3 py-1 bg-gray-100 rounded text-sm flex-1">Preview</button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="p-4 border rounded col-span-3 bg-gray-50">
+                      <div className="text-sm font-medium text-gray-700 mb-2">Save current setup as template</div>
                       <div className="flex gap-2">
                         <input id="new-tpl-name" className="border rounded p-2 flex-1" placeholder="Template name" />
-                        <button onClick={()=> { const el=document.getElementById('new-tpl-name'); if(el && el.value.trim()) { const tpl={ ...policy, meta:{ ...(policy.meta||{}), name: el.value.trim() } }; setPolicy(p=> ({ ...p, templates: [...(p.templates||[]), tpl] })); pushAudit(`Saved template ${el.value.trim()}`); el.value=''; } }} className="px-3 py-2 bg-green-600 text-white rounded">Save as Template</button>
+                        <button onClick={()=> {
+                          const el=document.getElementById('new-tpl-name');
+                          if(!el) return;
+                          const name = el.value.trim();
+                          if(name){
+                            const tpl={ ...policy, meta:{ ...(policy.meta||{}), name } };
+                            setPolicy(p=> ({ ...p, templates: [...(p.templates||[]), tpl] }));
+                            pushAudit(`Saved template ${name}`);
+                            el.value='';
+                          }
+                        }} className="px-3 py-2 bg-green-600 text-white rounded">Save as Template</button>
                       </div>
                     </div>
                   </div>
@@ -763,8 +1353,8 @@ export default function policy() {
             </div>
           </main>
 
-          <aside className="col-span-3">
-            <div className="bg-gray-50 p-4 rounded-lg sticky top-6 shadow-sm">
+          <aside className="order-3 xl:col-span-3">
+            <div ref={previewRef} className="bg-gray-50 p-4 rounded-lg xl:sticky xl:top-6 shadow-sm">
               <h3 className="font-medium">Live Preview</h3>
               <div className="text-xs text-gray-500 mb-2">Preview of selected settings</div>
               <div className="bg-white p-3 rounded border max-h-64 overflow-auto text-sm">
@@ -800,7 +1390,7 @@ export default function policy() {
                     {policy.approvalWorkflows.map((wf) => (
                       <li key={wf.id} className="text-sm">
                         <span className="font-medium">{wf.name}</span>
-                        <span className="text-xs text-gray-500"> &nbsp;({wf.steps.join(' → ')})</span>
+                        <span className="text-xs text-gray-500"> &nbsp;({wf.steps.join(' -> ')})</span>
                       </li>
                     ))}
                   </ul>
@@ -816,11 +1406,11 @@ export default function policy() {
                   </div>
 
                   <div className="mt-3 text-xs text-gray-500">Expense limits</div>
-                  <div className="mt-1 grid grid-cols-2 gap-2">
+                  <div className="mt-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {Object.keys(policy.expenseLimits).map((k) => (
                       <div key={k} className="text-sm">
                         <div className="text-xs text-gray-500">{k}</div>
-                        <div className="font-medium">{policy.expenseLimits[k] || '—'}</div>
+                        <div className="font-medium">{policy.expenseLimits[k] || 'Not set'}</div>
                       </div>
                     ))}
                   </div>
@@ -839,7 +1429,7 @@ export default function policy() {
                     <div className="text-xs text-gray-400">Assigned Groups</div>
                     <div className="mt-1 flex gap-2 flex-wrap">
                       {(policy.assignedGroups||[]).map((g,i) => (
-                        <span key={i} className="px-2 py-1 bg-white border rounded text-xs flex items-center gap-2">{g} <button onClick={()=> setPolicy(p=> ({ ...p, assignedGroups: p.assignedGroups.filter(x=> x!==g) }))} className="text-red-500 text-[10px]">×</button></span>
+                        <span key={i} className="px-2 py-1 bg-white border rounded text-xs flex items-center gap-2">{g} <button onClick={()=> setPolicy(p=> ({ ...p, assignedGroups: p.assignedGroups.filter(x=> x!==g) }))} className="text-red-500 text-[10px]">x</button></span>
                       ))}
                     </div>
                     <div className="mt-2 flex gap-2">
@@ -850,7 +1440,7 @@ export default function policy() {
                     <div className="mt-3 text-xs text-gray-400">Cost Centers</div>
                     <div className="mt-1 flex gap-2 flex-wrap">
                       {(policy.costCenters||[]).map((c,i) => (
-                        <span key={i} className="px-2 py-1 bg-white border rounded text-xs flex items-center gap-2">{c} <button onClick={()=> setPolicy(p=> ({ ...p, costCenters: p.costCenters.filter(x=> x!==c) }))} className="text-red-500 text-[10px]">×</button></span>
+                        <span key={i} className="px-2 py-1 bg-white border rounded text-xs flex items-center gap-2">{c} <button onClick={()=> setPolicy(p=> ({ ...p, costCenters: p.costCenters.filter(x=> x!==c) }))} className="text-red-500 text-[10px]">x</button></span>
                       ))}
                     </div>
                     <div className="mt-2 flex gap-2">
@@ -968,22 +1558,65 @@ export default function policy() {
               <div className="mt-4">
                 <div className="text-xs text-gray-500 mb-1">Shortcuts</div>
                 <div className="flex flex-col gap-2">
-                  <button onClick={()=> { setActiveTab('audit'); setFocusableIndex(5);}} className="px-3 py-2 bg-white border rounded text-left">Open Audit</button>
-                  <button onClick={()=> { setActiveTab('templates'); setFocusableIndex(6);}} className="px-3 py-2 bg-white border rounded text-left">Open Templates</button>
+                  <button onClick={()=> activateTab('audit', 5)} className="px-3 py-2 bg-white border rounded text-left">Open Audit</button>
+                  <button onClick={()=> activateTab('templates', 6)} className="px-3 py-2 bg-white border rounded text-left">Open Templates</button>
                 </div>
               </div>
             </div>
 
-            <div className="mt-4 text-xs text-gray-400">Version: 1.0 — local demo (no server).</div>
+            <div className="mt-4 text-xs text-gray-400">Version: 1.0 - local demo (no server).</div>
           </aside>
+        </div>
+
+        <div className="pointer-events-none fixed bottom-4 sm:bottom-6 left-1/2 z-40 w-full max-w-[95vw] sm:max-w-2xl lg:max-w-3xl -translate-x-1/2 px-2 sm:px-4">
+          <div className="pointer-events-auto flex flex-wrap items-center justify-between gap-3 rounded-full border border-purple-100 bg-white/95 px-4 sm:px-6 py-3 shadow-2xl backdrop-blur">
+            <div className="flex items-center gap-2 text-sm font-medium text-gray-600">
+              <span
+                className={`h-2 w-2 rounded-full ${hasUnsavedChanges ? "bg-amber-500 animate-pulse" : "bg-emerald-500"}`}
+              />
+              {hasUnsavedChanges ? "Unsaved changes" : "All changes saved"}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={savePolicy}
+                disabled={!hasUnsavedChanges}
+                className="px-4 py-2 rounded-full bg-purple-700 text-white text-sm font-medium disabled:opacity-60 disabled:cursor-not-allowed transition hover:bg-purple-600"
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={scrollToPreview}
+                className="px-4 py-2 rounded-full border border-gray-200 text-sm font-medium text-gray-700 hover:border-purple-300 hover:text-purple-700 transition"
+              >
+                Preview
+              </button>
+              <button
+                type="button"
+                onClick={handleQuickCompare}
+                disabled={!hasVersionHistory}
+                className="px-4 py-2 rounded-full border border-gray-200 text-sm font-medium text-gray-700 hover:border-purple-300 hover:text-purple-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                Compare
+              </button>
+              <button
+                type="button"
+                onClick={exportPolicy}
+                className="px-4 py-2 rounded-full border border-gray-200 text-sm font-medium text-gray-700 hover:border-purple-300 hover:text-purple-700 transition"
+              >
+                Export
+              </button>
+            </div>
+          </div>
         </div>
       </div>
       {previewTemplate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="bg-white rounded-lg shadow-lg max-w-3xl w-full p-6">
+          <div className="surface-card max-w-3xl w-full p-6">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-lg font-semibold">Template preview — {previewTemplate.meta?.name || 'Template'}</h3>
+                <h3 className="text-lg font-semibold">Template preview - {previewTemplate.meta?.name || 'Template'}</h3>
                 <div className="text-xs text-gray-500">Preview of template before loading</div>
               </div>
               <div className="flex gap-2">
@@ -994,7 +1627,7 @@ export default function policy() {
               </div>
             </div>
 
-            <div className="mt-4 grid grid-cols-2 gap-4">
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <div className="text-xs text-gray-500">Metadata</div>
                 <div className="p-3 bg-gray-50 rounded mt-1 text-sm font-mono max-h-56 overflow-auto">{JSON.stringify(previewTemplate.meta || {}, null, 2)}</div>
@@ -1004,11 +1637,11 @@ export default function policy() {
                 <div className="text-xs text-gray-500">Summary</div>
                 <div className="p-3 bg-gray-50 rounded mt-1 text-sm max-h-56 overflow-auto">
                   <div><strong>Booking class:</strong> {previewTemplate.bookingClass}</div>
-                  <div><strong>Budget:</strong> {previewTemplate.budgetLimit || '—'}</div>
+                  <div><strong>Budget:</strong> {previewTemplate.budgetLimit || 'Not set'}</div>
                   <div className="mt-2"><strong>Notifications:</strong> {Object.keys(previewTemplate.notificationChannels || {}).filter(k=> previewTemplate.notificationChannels[k]).join(', ') || 'None'}</div>
                   <div className="mt-2"><strong>Workflows:</strong>
                     <ul className="mt-1 ml-4 list-disc text-sm">
-                      {(previewTemplate.approvalWorkflows || []).map(wf => (<li key={wf.id}>{wf.name} — {wf.steps.join(' → ')}</li>))}
+                      {(previewTemplate.approvalWorkflows || []).map(wf => (<li key={wf.id}>{wf.name} - {wf.steps.join(' -> ')}</li>))}
                     </ul>
                   </div>
                 </div>
