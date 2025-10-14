@@ -565,26 +565,31 @@ export default function policy() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white p-8">
       <div className="max-w-7xl mx-auto surface-card overflow-hidden">
-        <header className="flex items-center justify-between p-6 bg-gradient-to-r from-purple-700 to-purple-600 text-white">
+        <header className="flex items-center justify-between p-6 bg-white border-b border-gray-200">
           <div>
-            <h1 className="section-heading text-3xl">Corporate Travel Policy Builder</h1>
-            <div className="text-sm text-purple-200">Create, preview and manage travel policies</div>
+            <h1 className="section-heading text-3xl text-gray-900">Corporate Travel Policy Builder</h1>
+            <div className="text-sm text-gray-600">Create, preview and manage travel policies</div>
           </div>
 
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileNavOpen((prev) => !prev)}
-              className="xl:hidden px-3 py-2 bg-white/10 hover:bg-white/20 rounded text-sm"
+              className="xl:hidden px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded text-sm text-gray-700 font-medium transition"
               aria-expanded={mobileNavOpen}
               aria-controls="policy-nav-panel"
             >
               {mobileNavOpen ? "Close Menu" : "Open Menu"}
             </button>
-            <button onClick={() => navigate(-1)} className="px-2 py-1 bg-white/10 hover:bg-white/20 rounded text-sm">Back</button>
+            <button onClick={() => navigate(-1)} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-gray-700 font-medium transition flex items-center gap-2">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M11 5l-5 5 5 5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Back
+            </button>
             <ThemeToggle />
             <button
               onClick={savePolicy}
-              className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-md transition"
+              className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-4 py-2 rounded-lg font-medium shadow-md hover:shadow-lg transition"
               title="Save policy (localStorage)"
             >
               <IconSave /> Save
@@ -592,13 +597,21 @@ export default function policy() {
 
             <button
               onClick={exportPolicy}
-              className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-md transition"
+              className="flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 px-4 py-2 rounded-lg font-medium transition"
               title="Export policy as JSON"
             >
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M10 3v10M6 9l4 4 4-4" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M3 17h14" strokeLinecap="round" />
+              </svg>
               Export
             </button>
 
-            <label className="cursor-pointer inline-block bg-white/10 hover:bg-white/20 px-4 py-2 rounded-md">
+            <label className="cursor-pointer inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 px-4 py-2 rounded-lg font-medium transition">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M10 13V3M6 7l4-4 4 4" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M3 17h14" strokeLinecap="round" />
+              </svg>
               Import
               <input
                 type="file"
