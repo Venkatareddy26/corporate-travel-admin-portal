@@ -80,12 +80,13 @@ function TabButton({ id, label, active, setActive, index, focusableIndex, setFoc
       tabIndex={active === id ? 0 : -1}
       onClick={() => setActive(id)}
       onFocus={() => setFocusableIndex(index)}
-      className={`px-4 py-2 text-sm font-medium rounded-t-lg focus:outline-none transition-all flex items-center gap-2 ${
+      className={`w-full px-4 py-3 text-sm font-semibold rounded-lg focus:outline-none transition-all duration-200 flex items-center gap-3 ${
         active === id
-          ? "bg-gradient-to-r from-purple-700 to-purple-600 text-white shadow-lg"
-          : "bg-white text-gray-700 hover:bg-gray-50"
+          ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg hover:from-blue-600 hover:to-purple-700"
+          : "bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-300"
       }`}
     >
+      <div className={`w-2 h-2 rounded-full ${active === id ? 'bg-white' : 'bg-gray-400'}`} />
       <span className="truncate">{label}</span>
     </button>
   );
@@ -564,48 +565,74 @@ export default function policy() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white p-8">
-      <div className="max-w-7xl mx-auto surface-card overflow-hidden">
-        <header className="flex items-center justify-between p-6 bg-white border-b border-gray-200">
-          <div>
-            <h1 className="section-heading text-3xl text-gray-900">Corporate Travel Policy Builder</h1>
-            <div className="text-sm text-gray-600">Create, preview and manage travel policies</div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setMobileNavOpen((prev) => !prev)}
-              className="xl:hidden px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded text-sm text-gray-700 font-medium transition"
-              aria-expanded={mobileNavOpen}
-              aria-controls="policy-nav-panel"
-            >
-              {mobileNavOpen ? "Close Menu" : "Open Menu"}
-            </button>
-            <button onClick={() => navigate(-1)} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-gray-700 font-medium transition flex items-center gap-2">
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M11 5l-5 5 5 5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              Back
-            </button>
-            <ThemeToggle />
-            <button
-              onClick={savePolicy}
-              className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-4 py-2 rounded-lg font-medium shadow-md hover:shadow-lg transition"
-              title="Save policy (localStorage)"
-            >
-              <IconSave /> Save
-            </button>
-
-            <button
-              onClick={exportPolicy}
-              className="flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 px-4 py-2 rounded-lg font-medium transition"
-              title="Export policy as JSON"
-            >
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M10 3v10M6 9l4 4 4-4" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M3 17h14" strokeLinecap="round" />
-              </svg>
-              Export
-            </button>
+      <div className="max-w-7xl mx-auto">
+        {/* Enhanced Header */}
+        <div className="mb-8">
+          <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-2xl p-8 text-white shadow-2xl">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+              <div className="flex-1">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h1 className="text-3xl font-bold">Policy Builder</h1>
+                    <p className="text-indigo-100 mt-1">Create, preview and manage corporate travel policies</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1 text-sm font-medium">
+                    {policy.meta?.name || 'Untitled Policy'}
+                  </div>
+                  {hasUnsavedChanges && (
+                    <div className="bg-amber-100 text-amber-800 px-3 py-1 rounded-lg text-sm font-medium">
+                      Unsaved Changes
+                    </div>
+                  )}
+                  {hasVersionHistory && (
+                    <div className="bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1 text-sm font-medium">
+                      {(policy.versions || []).length} Versions
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <div className="flex flex-wrap gap-3">
+                <button
+                  onClick={() => setMobileNavOpen((prev) => !prev)}
+                  className="xl:hidden bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/20 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200"
+                  aria-expanded={mobileNavOpen}
+                  aria-controls="policy-nav-panel"
+                >
+                  {mobileNavOpen ? "Close Menu" : "Open Menu"}
+                </button>
+                <button onClick={() => navigate(-1)} className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/20 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5l-5 5 5 5" />
+                  </svg>
+                  Back
+                </button>
+                <ThemeToggle />
+                <button
+                  onClick={savePolicy}
+                  className="bg-white text-indigo-600 hover:bg-indigo-50 rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-200 shadow-lg flex items-center gap-2"
+                  title="Save policy (localStorage)"
+                >
+                  <IconSave /> Save Policy
+                </button>
+                <button
+                  onClick={exportPolicy}
+                  className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/20 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center gap-2"
+                  title="Export policy as JSON"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 3v10M6 9l4 4 4-4" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 17h14" />
+                  </svg>
+                  Export
+                </button>
 
             <label className="cursor-pointer inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 px-4 py-2 rounded-lg font-medium transition">
               <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2">
@@ -621,7 +648,7 @@ export default function policy() {
               />
             </label>
           </div>
-        </header>
+        </div>
 
         {mobileNavOpen && (
           <div
@@ -630,31 +657,75 @@ export default function policy() {
           />
         )}
 
-        <div className="relative p-6 grid grid-cols-1 xl:grid-cols-12 gap-6">
-          <aside
-            id="policy-nav-panel"
-            className={`xl:col-span-3 order-2 xl:order-1 ${mobileNavOpen ? "block" : "hidden"} xl:block xl:static ${
-              mobileNavOpen ? "absolute left-4 right-4 top-4 z-50" : ""
-            }`}
-          >
-            <div className="bg-gray-50 rounded-lg p-4 xl:sticky xl:top-6 max-h-[80vh] overflow-y-auto">
-              <div className="mb-4">Policies</div>
-            <div className="mb-3">
-              <select className="w-full border rounded p-2" value={currentPolicyId} onChange={(e)=> setCurrentPolicyId(e.target.value)}>
-                {policies.map(p => (<option key={p.meta.id} value={p.meta.id}>{p.meta.name}</option>))}
-              </select>
-              <div className="flex gap-2 mt-2">
-                <button className="flex-1 px-2 py-1 bg-white border rounded" onClick={()=> { const name = prompt('New policy name'); if(name) createNewPolicyFromCurrent(name); }}>New</button>
-                <button className="px-2 py-1 bg-white border rounded" onClick={()=> createNewPolicyFromCurrent(`${policy.meta?.name || 'Copy'}`)}>Duplicate</button>
-                <button className="px-2 py-1 bg-red-50 text-red-600 border rounded" onClick={()=> deletePolicy(policy.meta?.id)}>Delete</button>
-              </div>
-            </div>
-            <div className="mb-4">Tabs (use Left/Right Home End)</div>
-            <div role="tablist" aria-label="Policy Tabs" onKeyDown={handleKeyDown} className="flex flex-col gap-2">
-              {TABS.map((t, i) => (
-                <TabButton key={t.id} id={t.id} label={t.label} active={activeTab} setActive={activateTab} index={i} focusableIndex={focusableIndex} setFocusableIndex={setFocusableIndex} />
-              ))}
-            </div>
+        <div className="surface-card rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+          <div className="grid grid-cols-1 xl:grid-cols-12 gap-0">
+            <aside
+              id="policy-nav-panel"
+              className={`xl:col-span-3 order-2 xl:order-1 ${mobileNavOpen ? "block" : "hidden"} xl:block xl:static ${
+                mobileNavOpen ? "absolute left-4 right-4 top-4 z-50" : ""
+              }`}
+            >
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-6 xl:sticky xl:top-0 max-h-[80vh] overflow-y-auto">
+                {/* Enhanced Policy Management */}
+                <div className="mb-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900">Policies</h3>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <select 
+                      className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white" 
+                      value={currentPolicyId} 
+                      onChange={(e)=> setCurrentPolicyId(e.target.value)}
+                    >
+                      {policies.map(p => (<option key={p.meta.id} value={p.meta.id}>{p.meta.name}</option>))}
+                    </select>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button 
+                        className="bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200" 
+                        onClick={()=> { const name = prompt('New policy name'); if(name) createNewPolicyFromCurrent(name); }}
+                      >
+                        New
+                      </button>
+                      <button 
+                        className="bg-white hover:bg-purple-50 text-purple-700 border border-purple-200 px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200" 
+                        onClick={()=> createNewPolicyFromCurrent(`${policy.meta?.name || 'Copy'}`)}
+                      >
+                        Duplicate
+                      </button>
+                    </div>
+                    <button 
+                      className="w-full bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200" 
+                      onClick={()=> deletePolicy(policy.meta?.id)}
+                    >
+                      Delete Policy
+                    </button>
+                  </div>
+                </div>
+
+                {/* Enhanced Tabs */}
+                <div className="mb-4">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900">Sections</h3>
+                  </div>
+                  <div className="text-xs text-gray-500 mb-3">Use Left/Right arrow keys or Home/End to navigate</div>
+                </div>
+                
+                <div role="tablist" aria-label="Policy Tabs" onKeyDown={handleKeyDown} className="space-y-2">
+                  {TABS.map((t, i) => (
+                    <TabButton key={t.id} id={t.id} label={t.label} active={activeTab} setActive={activateTab} index={i} focusableIndex={focusableIndex} setFocusableIndex={setFocusableIndex} />
+                  ))}
+                </div>
 
             <div className="mt-6">
               <div className="text-xs text-gray-500 mb-2">Quick actions</div>
@@ -1664,6 +1735,9 @@ export default function policy() {
         </div>
       )}
       <VersionDiffModal open={diffModalOpen} onClose={()=> setDiffModalOpen(false)} diffs={diffsForModal} title="Version Compare" />
+      </div>
+      </div>
+      </div>
     </div>
   );
 }

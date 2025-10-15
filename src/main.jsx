@@ -13,7 +13,7 @@ import Documents from './documents.jsx';
 import ReportsPage from './reports.jsx';
 import AnalyticsPage from './analytics.jsx';
 
-function AppRoutes(){
+function AppRoutes() {
 	return (
 		<Routes>
 			<Route path="/" element={<TravelDashboard />} />

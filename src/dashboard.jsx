@@ -314,90 +314,198 @@ export default function TravelDashboard() {
 
         <main className="flex-1">
           <div className="max-w-[1160px] mx-auto surface-card p-7">
-            <header className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div>
-                <h1 className="section-heading text-3xl sm:text-4xl font-serif">Travel dashboard</h1>
-                <p className="section-subheading mt-2 max-w-xl">Stay on top of company journeys, spending health, and traveller wellbeing at a glance.</p>
-              </div>
-              <div className="flex items-center gap-3 self-end sm:self-auto">
-                <span className="stat-label">Theme</span>
-                <ThemeToggle />
+            {/* Enhanced Header */}
+            <header className="mb-12 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-50 via-blue-50 to-indigo-50 opacity-60 rounded-3xl"></div>
+              <div className="relative p-8">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                  <div>
+                    <h1 className="section-heading text-4xl lg:text-5xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                      Travel Dashboard
+                    </h1>
+                    <p className="section-subheading mt-4 max-w-2xl text-lg leading-relaxed">
+                      Comprehensive oversight of company travel, spending analytics, and traveler safety monitoring in real-time.
+                    </p>
+                    <div className="flex items-center gap-4 mt-6">
+                      <div className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-purple-200">
+                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        <span className="text-sm font-medium text-gray-700">Live Data</span>
+                      </div>
+                      <div className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-blue-200">
+                        <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span className="text-sm font-medium text-gray-700">Last updated: {new Date().toLocaleTimeString()}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-gray-200">
+                      <span className="text-sm font-medium text-gray-700">Theme</span>
+                      <ThemeToggle />
+                    </div>
+                  </div>
+                </div>
               </div>
             </header>
 
-                        {/* KPI overview */}
-            <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+            {/* Enhanced KPI Overview */}
+            <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
               {[
                 {
-                  label: 'Airfare spend',
+                  label: 'Airfare Spend',
                   value: `$${summary.airfare.toLocaleString()}`,
                   badge: '+ 8.4% vs last month',
-                  icon: 'A',
-                  tones: {
-                    badge: 'from-purple-500 via-purple-400 to-purple-600',
-                    icon: 'from-purple-500 to-purple-600'
-                  }
+                  icon: (
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                  ),
+                  gradient: 'from-purple-500 to-indigo-500',
+                  bgGradient: 'from-purple-50 to-indigo-50',
+                  borderColor: 'border-purple-200'
                 },
                 {
-                  label: 'Hotels spend',
+                  label: 'Hotels Spend',
                   value: `$${summary.hotels.toLocaleString()}`,
                   badge: '+ 6.1% vs last month',
-                  icon: 'H',
-                  tones: {
-                    badge: 'from-sky-500 via-sky-400 to-sky-600',
-                    icon: 'from-sky-500 to-sky-600'
-                  }
+                  icon: (
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                    </svg>
+                  ),
+                  gradient: 'from-sky-500 to-cyan-500',
+                  bgGradient: 'from-sky-50 to-cyan-50',
+                  borderColor: 'border-sky-200'
                 },
                 {
-                  label: 'Ground and cars',
+                  label: 'Ground & Cars',
                   value: `$${summary.cars.toLocaleString()}`,
                   badge: '- 3.3% vs last month',
-                  icon: 'C',
-                  tones: {
-                    badge: 'from-amber-500 via-amber-400 to-amber-600',
-                    icon: 'from-amber-500 to-amber-600'
-                  }
+                  icon: (
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1m-1-1V8a1 1 0 00-1-1H9m4 8V8a1 1 0 00-1-1H9"></path>
+                    </svg>
+                  ),
+                  gradient: 'from-amber-500 to-orange-500',
+                  bgGradient: 'from-amber-50 to-orange-50',
+                  borderColor: 'border-amber-200'
                 },
                 {
-                  label: 'Total travel spend',
+                  label: 'Total Travel Spend',
                   value: `$${summary.total.toLocaleString()}`,
-                  badge: 'Budget utilisation 78%',
-                  icon: 'T',
-                  tones: {
-                    badge: 'from-emerald-500 via-emerald-400 to-emerald-600',
-                    icon: 'from-emerald-500 to-emerald-600'
-                  }
+                  badge: 'Budget utilization 78%',
+                  icon: (
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                    </svg>
+                  ),
+                  gradient: 'from-emerald-500 to-teal-500',
+                  bgGradient: 'from-emerald-50 to-teal-50',
+                  borderColor: 'border-emerald-200'
                 }
               ].map((card) => (
-                <article key={card.label} className="surface-card p-5 flex flex-col gap-3 hover:shadow-2xl transition-shadow duration-200">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${card.tones.icon} text-white flex items-center justify-center text-xl font-semibold shadow-inner`}>
+                <article key={card.label} className={`surface-card p-6 bg-gradient-to-br ${card.bgGradient} border ${card.borderColor} rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105`}>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${card.gradient} text-white flex items-center justify-center shadow-lg`}>
                       {card.icon}
                     </div>
-                    <span className={`px-3 py-1 text-xs font-medium rounded-full bg-gradient-to-r ${card.tones.badge} text-white tracking-tight shadow-sm`}>
+                    <span className={`px-3 py-1 text-xs font-semibold rounded-full bg-gradient-to-r ${card.gradient} text-white shadow-sm`}>
                       {card.badge}
                     </span>
                   </div>
-                  <div className="space-y-1">
-                    <p className="stat-label">{card.label}</p>
-                    <p className="stat-number text-3xl sm:text-[2.15rem]">{card.value}</p>
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-gray-600">{card.label}</p>
+                    <p className="text-3xl font-bold text-gray-900">{card.value}</p>
                   </div>
                 </article>
               ))}
             </section>
 
-            <section className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4 mb-6">
+            {/* Enhanced Secondary Metrics */}
+            <section className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
               {[
-                { label: 'Trips', value: summary.trips, hint: 'Active in last 30 days' },
-                { label: 'Travellers', value: summary.travelers, hint: 'Unique employees' },
-                { label: 'Destinations', value: summary.destinations, hint: 'Countries covered' },
-                { label: 'Plan-to-book', value: summary.avgPlanBook, hint: 'Average turnaround' },
-                { label: 'Approval time', value: summary.avgApproval, hint: 'Manager response' },
+                { 
+                  label: 'Active Trips', 
+                  value: summary.trips, 
+                  hint: 'Last 30 days',
+                  icon: (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                  ),
+                  color: 'text-blue-600',
+                  bgColor: 'bg-blue-50',
+                  borderColor: 'border-blue-200'
+                },
+                { 
+                  label: 'Travellers', 
+                  value: summary.travelers, 
+                  hint: 'Unique employees',
+                  icon: (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                    </svg>
+                  ),
+                  color: 'text-emerald-600',
+                  bgColor: 'bg-emerald-50',
+                  borderColor: 'border-emerald-200'
+                },
+                { 
+                  label: 'Destinations', 
+                  value: summary.destinations, 
+                  hint: 'Countries covered',
+                  icon: (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  ),
+                  color: 'text-purple-600',
+                  bgColor: 'bg-purple-50',
+                  borderColor: 'border-purple-200'
+                },
+                { 
+                  label: 'Plan-to-Book', 
+                  value: summary.avgPlanBook, 
+                  hint: 'Average turnaround',
+                  icon: (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  ),
+                  color: 'text-amber-600',
+                  bgColor: 'bg-amber-50',
+                  borderColor: 'border-amber-200'
+                },
+                { 
+                  label: 'Approval Time', 
+                  value: summary.avgApproval, 
+                  hint: 'Manager response',
+                  icon: (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  ),
+                  color: 'text-cyan-600',
+                  bgColor: 'bg-cyan-50',
+                  borderColor: 'border-cyan-200'
+                },
               ].map((item) => (
-                <div key={item.label} className="surface-card py-5 px-4 flex flex-col items-center text-center">
-                  <div className="stat-number text-2xl">{item.value}</div>
-                  <div className="stat-label mt-2">{item.label}</div>
-                  <div className="text-[11px] text-muted mt-2" style={{opacity:0.85}}>{item.hint}</div>
+                <div key={item.label} className={`surface-card p-6 ${item.bgColor} border ${item.borderColor} rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105`}>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className={`w-10 h-10 ${item.bgColor} rounded-xl flex items-center justify-center`}>
+                      <div className={item.color}>
+                        {item.icon}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className={`text-3xl font-bold ${item.color} mb-2`}>{item.value}</div>
+                    <div className="text-sm font-semibold text-gray-700 mb-1">{item.label}</div>
+                    <div className="text-xs text-gray-500">{item.hint}</div>
+                  </div>
                 </div>
               ))}
             </section>
@@ -512,21 +620,42 @@ export default function TravelDashboard() {
             <section className="mt-12 max-w-[1160px] mx-auto">
               <h2 className="section-heading text-2xl mb-4">Reporting & Analytics</h2>
               <div className="grid grid-cols-12 gap-8">
-                  <div className="col-span-7 surface-card p-6">
+                  <div className="col-span-7">
                     {visibleWidgets.includes('tripFrequency') && (
-                      <>
-                        <h3 className="section-heading text-lg mb-2">Trip Frequency (last 6 months)</h3>
+                      <div className="surface-card p-8 rounded-2xl shadow-lg border border-gray-200">
+                        <div className="flex items-center gap-3 mb-6">
+                          <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
+                            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                          </div>
+                          <div>
+                            <h3 className="text-xl font-bold text-gray-900">Trip Frequency</h3>
+                            <p className="text-sm text-gray-600">Travel patterns over the last 6 months</p>
+                          </div>
+                        </div>
                         <TripFrequencyBarChart />
-                      </>
+                      </div>
                     )}
                   </div>
 
-                  <div className="col-span-5 surface-card p-6">
+                  <div className="col-span-5">
                     {visibleWidgets.includes('topDestinations') && (
-                      <>
-                        <h3 className="section-heading text-lg mb-2">Top Destinations</h3>
+                      <div className="surface-card p-8 rounded-2xl shadow-lg border border-gray-200">
+                        <div className="flex items-center gap-3 mb-6">
+                          <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center">
+                            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                          </div>
+                          <div>
+                            <h3 className="text-xl font-bold text-gray-900">Top Destinations</h3>
+                            <p className="text-sm text-gray-600">Most visited locations</p>
+                          </div>
+                        </div>
                         <TopDestinationsChart data={[{label:'London', value:32},{label:'New York', value:28},{label:'Tokyo', value:24},{label:'Paris', value:19},{label:'Sydney', value:15}]} />
-                      </>
+                      </div>
                     )}
                   </div>
               </div>
@@ -573,26 +702,50 @@ function TripFrequencyBarChart() {
     { month: 'Sep', count: 19 },
   ];
   const max = Math.max(...data.map(d => d.count));
-  const barGradient = 'linear-gradient(200deg, rgba(124,58,237,0.88), rgba(76,29,149,0.92))';
+  
   return (
-    <div className="flex items-end gap-3 h-32 w-full">
-      {data.map((d) => (
-        <div key={d.month} className="flex flex-col items-center flex-1">
-          <div
-            className="w-7 rounded-t"
-            style={{
-              height: `${(d.count / max) * 100}%`,
-              minHeight: 16,
-              backgroundImage: barGradient,
-              boxShadow: '0 10px 18px rgba(124,58,237,0.25)',
-            }}
-          >
-            <div className="sr-only">{d.count} trips</div>
+    <div className="space-y-6">
+      {data.map((d, index) => {
+        const percentage = (d.count / max) * 100;
+        const isHighest = d.count === max;
+        
+        return (
+          <div key={d.month} className="group">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-16 text-sm font-semibold text-gray-700">{d.month}</div>
+                <div className="text-2xl font-bold text-gray-900">{d.count}</div>
+                <div className="text-sm text-gray-500">trips</div>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="text-sm font-medium text-gray-600">
+                  {percentage.toFixed(0)}%
+                </div>
+                {isHighest && (
+                  <div className="w-6 h-6 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full flex items-center justify-center">
+                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="relative bg-gray-100 rounded-full h-8 overflow-hidden shadow-inner">
+              <div 
+                className={`h-full rounded-full transition-all duration-1000 ease-out ${
+                  isHighest 
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-600 shadow-lg' 
+                    : 'bg-gradient-to-r from-blue-500 to-purple-600'
+                }`}
+                style={{ 
+                  width: `${percentage}%`,
+                  animationDelay: `${index * 100}ms`
+                }}
+              />
+            </div>
           </div>
-          <div className="text-xs text-gray-500 mt-1">{d.month}</div>
-          <div className="text-xs font-semibold text-slate-700">{d.count}</div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

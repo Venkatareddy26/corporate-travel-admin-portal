@@ -91,22 +91,48 @@ export default function Documents(){
   function addPolicy(dest, types){ setPolicies(p => ({ ...p, [dest]: types })); }
 
   return (
-    <div className="app-root space-y-6">
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="page-header">
-          <h1 className="section-heading text-3xl">Document & Compliance</h1>
-          <p className="section-subheading">Store passports, visas, vaccination records, and insurance while validating against policy rules.</p>
+    <div className="min-h-screen app-root p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Enhanced Header */}
+        <div className="mb-8">
+          <div className="bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 rounded-2xl p-8 text-white shadow-2xl">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+              <div className="flex-1">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h1 className="text-3xl font-bold">Document Management</h1>
+                    <p className="text-violet-100 mt-1">Store passports, visas, vaccination records, and insurance with compliance validation</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1 text-sm font-medium">
+                    {docs.length} Documents
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1 text-sm font-medium">
+                    {employees.length} Employees
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1 text-sm font-medium">
+                    {reminders.length} Expiring Soon
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex flex-wrap gap-3">
+                <button onClick={()=> navigate(-1)} className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/20 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5l-5 5 5 5" />
+                  </svg>
+                  Back
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="page-actions">
-          <button onClick={()=> navigate(-1)} className="btn btn-outline">
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
-              <path d="M11 5l-5 5 5 5" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M6 10h8" strokeLinecap="round" />
-            </svg>
-            Back
-          </button>
-        </div>
-      </div>
 
       <div className="grid grid-cols-12 gap-6">
         <aside className="col-span-3 surface-card p-4">
@@ -222,6 +248,7 @@ export default function Documents(){
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

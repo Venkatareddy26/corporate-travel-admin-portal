@@ -161,40 +161,121 @@ export default function Trips(){
     if(selected && selected.id === id) setSelected(null);
   }
 
-  // small form
+  // Enhanced form
   function NewTripForm({ onCreate }){
     const [form, setForm] = useState({ requester: '', department: '', destination: '', start: '', end: '', purpose: '', costEstimate: '', riskLevel: 'Low' });
 
     return (
-      <div className="surface-card p-6 mt-4 space-y-4">
-        <div className="page-header">
-          <h3 className="section-heading text-lg">New trip request</h3>
-          <p className="section-subheading text-sm">Capture the essentials to route a request for approval.</p>
+      <div className="surface-card p-8 mt-6 rounded-2xl shadow-lg border border-gray-200">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
+            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-gray-900">New Trip Request</h3>
+            <p className="text-sm text-gray-600">Capture the essentials to route a request for approval</p>
+          </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <input placeholder="Requester" value={form.requester} onChange={(e)=> setForm({...form, requester: e.target.value})} />
-          <input placeholder="Department" value={form.department} onChange={(e)=> setForm({...form, department: e.target.value})} />
-          <input placeholder="Destination" value={form.destination} onChange={(e)=> setForm({...form, destination: e.target.value})} />
-          <input type="date" value={form.start} onChange={(e)=> setForm({...form, start: e.target.value})} />
-          <input type="date" value={form.end} onChange={(e)=> setForm({...form, end: e.target.value})} />
-          <select value={form.riskLevel} onChange={(e)=> setForm({...form, riskLevel: e.target.value})}>
-            <option>Low</option>
-            <option>Medium</option>
-            <option>High</option>
-          </select>
-          <input placeholder="Cost estimate" type="number" value={form.costEstimate} onChange={(e)=> setForm({...form, costEstimate: Number(e.target.value)})} />
-          <textarea placeholder="Purpose" className="sm:col-span-2" value={form.purpose} onChange={(e)=> setForm({...form, purpose: e.target.value})} />
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-gray-700">Requester</label>
+            <input 
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" 
+              placeholder="Enter requester name" 
+              value={form.requester} 
+              onChange={(e)=> setForm({...form, requester: e.target.value})} 
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-gray-700">Department</label>
+            <input 
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" 
+              placeholder="Enter department" 
+              value={form.department} 
+              onChange={(e)=> setForm({...form, department: e.target.value})} 
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-gray-700">Destination</label>
+            <input 
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" 
+              placeholder="Enter destination" 
+              value={form.destination} 
+              onChange={(e)=> setForm({...form, destination: e.target.value})} 
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-gray-700">Start Date</label>
+            <input 
+              type="date" 
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" 
+              value={form.start} 
+              onChange={(e)=> setForm({...form, start: e.target.value})} 
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-gray-700">End Date</label>
+            <input 
+              type="date" 
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" 
+              value={form.end} 
+              onChange={(e)=> setForm({...form, end: e.target.value})} 
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-gray-700">Risk Level</label>
+            <select 
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" 
+              value={form.riskLevel} 
+              onChange={(e)=> setForm({...form, riskLevel: e.target.value})}
+            >
+              <option>Low</option>
+              <option>Medium</option>
+              <option>High</option>
+            </select>
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-gray-700">Cost Estimate ($)</label>
+            <input 
+              placeholder="Enter cost estimate" 
+              type="number" 
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" 
+              value={form.costEstimate} 
+              onChange={(e)=> setForm({...form, costEstimate: Number(e.target.value)})} 
+            />
+          </div>
+          <div className="sm:col-span-2 space-y-2">
+            <label className="text-sm font-semibold text-gray-700">Purpose</label>
+            <textarea 
+              placeholder="Describe the purpose of the trip" 
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none" 
+              rows="3"
+              value={form.purpose} 
+              onChange={(e)=> setForm({...form, purpose: e.target.value})} 
+            />
+          </div>
         </div>
 
-        <div className="flex flex-wrap gap-3">
-          <button onClick={()=> { onCreate(form); }} className="btn btn-primary">
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
-              <path d="M10 4v12" strokeLinecap="round" />
-              <path d="M4 10h12" strokeLinecap="round" />
+        <div className="flex flex-wrap gap-4 mt-8">
+          <button 
+            onClick={()=> { onCreate(form); }} 
+            className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 4v12" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 10h12" />
             </svg>
-            Submit request
+            Submit Request
           </button>
-          <button onClick={()=> setShowForm(false)} className="btn btn-outline">Cancel</button>
+          <button 
+            onClick={()=> setShowForm(false)} 
+            className="bg-gray-100 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-all duration-200 border border-gray-200"
+          >
+            Cancel
+          </button>
         </div>
       </div>
     );
@@ -335,107 +416,281 @@ export default function Trips(){
   return (
     <div className="min-h-screen app-root p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="page-header">
-            <h1 className="section-heading text-3xl">Trips management</h1>
-            <p className="section-subheading">View, approve, and monitor employee trips.</p>
-          </div>
-
-          <div className="page-actions">
-            <button onClick={() => navigate(-1)} className="btn btn-outline">
-              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
-                <path d="M11 5l-5 5 5 5" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M6 10h8" strokeLinecap="round" />
-              </svg>
-              Back
-            </button>
-            <button onClick={()=> setShowForm(s => !s)} className="btn btn-primary">
-              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
-                <path d="M10 4v12" strokeLinecap="round" />
-                <path d="M4 10h12" strokeLinecap="round" />
-              </svg>
-              {showForm ? 'Close form' : 'New trip'}
-            </button>
-            <button onClick={()=> { localStorage.removeItem(TRIPS_KEY); setTrips(defaultTrips()); }} className="btn btn-outline">
-              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
-                <path d="M4 4h12" strokeLinecap="round" />
-                <path d="M6 4l1-2h6l1 2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M15 4l-.6 11.2A1.5 1.5 0 0112.9 16H7.1a1.5 1.5 0 01-1.5-1.4L5 4" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              Reset demo
-            </button>
+        {/* Enhanced Header Section */}
+        <div className="mb-8">
+          <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-2xl p-8 text-white shadow-2xl">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+              <div className="flex-1">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h1 className="text-3xl font-bold">Trip Management</h1>
+                    <p className="text-blue-100 mt-1">View, approve, and monitor employee travel requests</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1 text-sm font-medium">
+                    {trips.length} Total Trips
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1 text-sm font-medium">
+                    {trips.filter(t => t.status === 'pending').length} Pending
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1 text-sm font-medium">
+                    {trips.filter(t => t.status === 'active').length} Active
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex flex-wrap gap-3">
+                <button onClick={() => navigate(-1)} className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/20 rounded-lg px-4 py-2 flex items-center gap-2 transition-all duration-200">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5l-5 5 5 5" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 10h8" />
+                  </svg>
+                  Back
+                </button>
+                <button onClick={()=> setShowForm(s => !s)} className="bg-white text-blue-600 hover:bg-blue-50 rounded-lg px-4 py-2 flex items-center gap-2 font-semibold transition-all duration-200 shadow-lg">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 4v12" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 10h12" />
+                  </svg>
+                  {showForm ? 'Close Form' : 'New Trip'}
+                </button>
+                <button onClick={()=> { localStorage.removeItem(TRIPS_KEY); setTrips(defaultTrips()); }} className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/20 rounded-lg px-4 py-2 flex items-center gap-2 transition-all duration-200">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4h12" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 4l1-2h6l1 2" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 4l-.6 11.2A1.5 1.5 0 0112.9 16H7.1a1.5 1.5 0 01-1.5-1.4L5 4" />
+                  </svg>
+                  Reset Demo
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
         { showForm && <NewTripForm onCreate={addTrip} /> }
 
-        <div className="mt-4 surface-card p-5">
-          <div className="flex gap-2 items-center">
-            <select  value={filter.status} onChange={(e)=> setFilter(f => ({...f, status: e.target.value}))}>
-              <option value="all">All statuses</option>
-              {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
-            <input placeholder="Department"  value={filter.department} onChange={(e)=> setFilter(f=>({...f, department: e.target.value}))} />
-            <input placeholder="Destination"  value={filter.destination} onChange={(e)=> setFilter(f=>({...f, destination: e.target.value}))} />
-            <input placeholder="Requester"  value={filter.requester} onChange={(e)=> setFilter(f=>({...f, requester: e.target.value}))} />
-
-            <div className="ml-auto text-sm text-muted">Showing {visible.length} of {trips.length}</div>
+        <div className="mt-6 surface-card p-8 rounded-2xl shadow-lg border border-gray-200">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">Trip Requests</h3>
+                <p className="text-sm text-gray-600">Manage and track employee travel requests</p>
+              </div>
+            </div>
+            <div className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-lg">
+              Showing {visible.length} of {trips.length}
+            </div>
           </div>
 
-          <div className="mt-3 grid grid-cols-12 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-gray-700">Status</label>
+              <select 
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" 
+                value={filter.status} 
+                onChange={(e)=> setFilter(f => ({...f, status: e.target.value}))}
+              >
+                <option value="all">All statuses</option>
+                {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-gray-700">Department</label>
+              <input 
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" 
+                placeholder="Filter by department" 
+                value={filter.department} 
+                onChange={(e)=> setFilter(f=>({...f, department: e.target.value}))} 
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-gray-700">Destination</label>
+              <input 
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" 
+                placeholder="Filter by destination" 
+                value={filter.destination} 
+                onChange={(e)=> setFilter(f=>({...f, destination: e.target.value}))} 
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-gray-700">Requester</label>
+              <input 
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" 
+                placeholder="Filter by requester" 
+                value={filter.requester} 
+                onChange={(e)=> setFilter(f=>({...f, requester: e.target.value}))} 
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-12 gap-8">
             <div className="col-span-8">
-              <ul className="space-y-2">
+              <div className="space-y-4">
                 {visible.map(t => (
-                  <li key={t.id} className="surface-card p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-purple-100 text-purple-800 flex items-center justify-center">{t.requester ? t.requester.charAt(0) : 'U'}</div>
-                      <div>
-                        <div className="font-medium">{t.requester} <span className="text-xs text-muted uppercase tracking-wider">— {t.department}</span></div>
-                        <div className="section-subheading">{t.destination} • {t.start} → {t.end} • ${t.costEstimate}</div>
+                  <div key={t.id} className="surface-card p-6 rounded-xl border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-blue-300">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white flex items-center justify-center font-bold text-lg">
+                          {t.requester ? t.requester.charAt(0) : 'U'}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <h4 className="font-semibold text-gray-900">{t.requester}</h4>
+                            <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">{t.department}</span>
+                          </div>
+                          <div className="flex items-center gap-4 text-sm text-gray-600">
+                            <div className="flex items-center gap-1">
+                              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                              </svg>
+                              {t.destination}
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                              </svg>
+                              {t.start} → {t.end}
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                              </svg>
+                              ${t.costEstimate}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <div className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          t.status==='pending'?'bg-amber-100 text-amber-800 border border-amber-200':
+                          t.status==='approved'?'bg-emerald-100 text-emerald-800 border border-emerald-200':
+                          t.status==='rejected'?'bg-red-100 text-red-800 border border-red-200':
+                          t.status==='active'?'bg-blue-100 text-blue-800 border border-blue-200':
+                          'bg-gray-100 text-gray-800 border border-gray-200'
+                        }`}>
+                          {t.status}
+                        </div>
+                        <button 
+                          onClick={()=> { setSelected(t); }} 
+                          className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg"
+                        >
+                          View Details
+                        </button>
                       </div>
                     </div>
-
-                    <div className="flex items-center gap-2">
-                      <div className={`px-2 py-1 rounded text-xs ${t.status==='pending'?'bg-yellow-100 text-yellow-800':t.status==='approved'?'bg-green-100 text-green-800':t.status==='rejected'?'bg-red-100 text-red-800':t.status==='active'?'bg-indigo-100 text-indigo-800':'bg-slate-100 text-slate-700'}`}>{t.status}</div>
-
-                      <button onClick={()=> { setSelected(t); }} className="px-3 py-1 bg-white border rounded text-sm">Details</button>
-                    </div>
-                  </li>
+                  </div>
                 ))}
 
                 { visible.length === 0 && (
-                  <li className="surface-card p-4 text-sm text-muted">No trip requests found</li>
+                  <div className="surface-card p-12 text-center rounded-xl border border-gray-200">
+                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No trip requests found</h3>
+                    <p className="text-gray-600">Try adjusting your filters or create a new trip request</p>
+                  </div>
                 ) }
-              </ul>
+              </div>
             </div>
 
-            <div className="col-span-4">
-              <div className="bg-gray-50 p-3 rounded">
-                <h3 className="section-heading text-lg">Quick Actions</h3>
-                <div className="space-y-2 text-sm mt-3">
-                  <button onClick={()=> { const p = visible[0]; if(p){ handleApprove(p.id, 'AutoApprover', 'Bulk approve'); alert('Approved first visible request'); } else alert('No visible trip'); }} className="w-full btn btn-primary">Approve first</button>
-                  <button onClick={()=> { const p = visible[0]; if(p){ handleReject(p.id, 'AutoApprover', 'Bulk reject'); alert('Rejected first visible request'); } else alert('No visible trip'); }} className="w-full btn btn-outline text-red-600">Reject first</button>
-                  <button onClick={()=> { const stats = trips.reduce((acc,t)=> { acc[t.status] = (acc[t.status]||0)+1; return acc; }, {}); alert('Counts: '+ JSON.stringify(stats)); }} className="w-full btn btn-outline">Stats</button>
+            <div className="col-span-4 space-y-6">
+              {/* Quick Actions */}
+              <div className="surface-card p-6 rounded-xl shadow-lg border border-gray-200">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">Quick Actions</h3>
+                    <p className="text-sm text-gray-600">Bulk operations and utilities</p>
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <button 
+                    onClick={()=> { const p = visible[0]; if(p){ handleApprove(p.id, 'AutoApprover', 'Bulk approve'); alert('Approved first visible request'); } else alert('No visible trip'); }} 
+                    className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-4 py-3 rounded-lg font-semibold hover:from-emerald-600 hover:to-teal-700 transition-all duration-200 shadow-md hover:shadow-lg"
+                  >
+                    Approve First
+                  </button>
+                  <button 
+                    onClick={()=> { const p = visible[0]; if(p){ handleReject(p.id, 'AutoApprover', 'Bulk reject'); alert('Rejected first visible request'); } else alert('No visible trip'); }} 
+                    className="w-full bg-red-100 text-red-700 px-4 py-3 rounded-lg font-semibold hover:bg-red-200 transition-all duration-200 border border-red-200"
+                  >
+                    Reject First
+                  </button>
+                  <button 
+                    onClick={()=> { const stats = trips.reduce((acc,t)=> { acc[t.status] = (acc[t.status]||0)+1; return acc; }, {}); alert('Counts: '+ JSON.stringify(stats)); }} 
+                    className="w-full bg-gray-100 text-gray-700 px-4 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-all duration-200 border border-gray-200"
+                  >
+                    View Statistics
+                  </button>
                 </div>
 
-                <div className="mt-4 text-xs text-muted">Filters are applied to the list. Use Details to manage a request.</div>
+                <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <p className="text-xs text-blue-700">Filters are applied to the list. Use Details to manage a request.</p>
+                </div>
               </div>
 
-              <div className="mt-3 surface-card p-4">
-                <h3 className="section-heading text-lg">Notifications</h3>
-                <div className="section-subheading text-sm">
-                  Sent notifications to requesters. Click to open email client.
+              {/* Notifications */}
+              <div className="surface-card p-6 rounded-xl shadow-lg border border-gray-200">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-5 5v-5zM4.828 7l2.586 2.586a2 2 0 002.828 0L12 7l-5.172 5.172a2 2 0 01-2.828 0L1.414 7l2.586-2.586a2 2 0 012.828 0L12 7l-5.172-5.172a2 2 0 00-2.828 0L1.414 7z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">Notifications</h3>
+                    <p className="text-sm text-gray-600">Sent notifications to requesters</p>
+                  </div>
                 </div>
-                <div className="mt-2 max-h-40 overflow-auto text-sm space-y-2">
-                  { notifications.length === 0 && <div className="text-xs text-muted uppercase tracking-wider">No notifications sent</div> }
-                  { notifications.map(n => (
-                    <div key={n.id} className="rounded-xl border border-slate-200/70 bg-white/70 p-3 flex items-center justify-between">
-                      <div className="truncate">
-                        <div className="font-medium">{n.subject}</div>
-                        <div className="text-xs text-muted uppercase tracking-wider">to {n.to} • {new Date(n.ts).toLocaleString()}</div>
+                
+                <div className="max-h-60 overflow-auto space-y-3">
+                  { notifications.length === 0 && (
+                    <div className="text-center py-8">
+                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-5 5v-5zM4.828 7l2.586 2.586a2 2 0 002.828 0L12 7l-5.172 5.172a2 2 0 01-2.828 0L1.414 7l2.586-2.586a2 2 0 012.828 0L12 7l-5.172-5.172a2 2 0 00-2.828 0L1.414 7z"></path>
+                        </svg>
                       </div>
-                      <div className="flex gap-2">
-                        <a className="btn btn-outline text-xs" href={`mailto:${n.to}?subject=${encodeURIComponent(n.subject)}&body=${encodeURIComponent(n.body)}`} target="_blank" rel="noreferrer">Open</a>
+                      <p className="text-sm text-gray-500">No notifications sent</p>
+                    </div>
+                  ) }
+                  { notifications.map(n => (
+                    <div key={n.id} className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-200">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-900 text-sm mb-1">{n.subject}</h4>
+                          <p className="text-xs text-gray-500 mb-2">to {n.to}</p>
+                          <p className="text-xs text-gray-400">{new Date(n.ts).toLocaleString()}</p>
+                        </div>
+                        <a 
+                          className="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs font-semibold hover:bg-blue-200 transition-all duration-200" 
+                          href={`mailto:${n.to}?subject=${encodeURIComponent(n.subject)}&body=${encodeURIComponent(n.body)}`} 
+                          target="_blank" 
+                          rel="noreferrer"
+                        >
+                          Open
+                        </a>
                       </div>
                     </div>
                   ))}

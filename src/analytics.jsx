@@ -108,140 +108,420 @@ export default function Analytics(){
   }
 
   return (
-    <div className="app-root space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="section-heading text-3xl">Reports & Analytics</h1>
-          <p className="section-subheading mt-1 max-w-2xl">Operational insights across trip volumes, spend, compliance health, ESG estimates, and recorded incidents.</p>
+    <div className="app-root space-y-8">
+      {/* Enhanced Header */}
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-50 via-blue-50 to-indigo-50 opacity-50"></div>
+        <div className="relative">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="section-heading text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                Reports & Analytics
+              </h1>
+              <p className="section-subheading mt-3 max-w-2xl text-lg">
+                Comprehensive insights across trip volumes, spend analysis, compliance health, ESG metrics, and safety incidents.
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-purple-200">
+                <span className="text-sm font-medium text-purple-700">Last updated: {new Date().toLocaleDateString()}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-6">
-        <aside className="col-span-3 surface-card p-5 space-y-4">
-          <div>
-            <h3 className="section-heading text-lg mb-1">Filters</h3>
-            <p className="section-subheading text-xs">Refine analytics by team and geography.</p>
-          </div>
-          <div className="space-y-4">
-            <label className="stat-label block">Department</label>
-            <select value={deptFilter} onChange={e=> setDeptFilter(e.target.value)} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400/70 transition">
-              {departments.map(d=> <option key={d} value={d}>{d}</option>)}
-            </select>
-            <label className="stat-label block">Region</label>
-            <select value={regionFilter} onChange={e=> setRegionFilter(e.target.value)} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400/70 transition">
-              {regions.map(r=> <option key={r} value={r}>{r}</option>)}
-            </select>
-          </div>
+      <div className="grid grid-cols-12 gap-8">
+        {/* Enhanced Filters Sidebar */}
+        <aside className="col-span-3">
+          <div className="surface-card p-6 space-y-6 bg-white/80 backdrop-blur-sm border border-purple-100 rounded-2xl shadow-lg">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 className="section-heading text-lg font-semibold">Filters</h3>
+                <p className="section-subheading text-sm text-gray-600">Refine analytics by team and geography</p>
+              </div>
+            </div>
+            
+            <div className="space-y-5">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Department</label>
+                <select 
+                  value={deptFilter} 
+                  onChange={e=> setDeptFilter(e.target.value)} 
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all bg-white hover:border-purple-300"
+                >
+                  {departments.map(d=> <option key={d} value={d}>{d}</option>)}
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Region</label>
+                <select 
+                  value={regionFilter} 
+                  onChange={e=> setRegionFilter(e.target.value)} 
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all bg-white hover:border-purple-300"
+                >
+                  {regions.map(r=> <option key={r} value={r}>{r}</option>)}
+                </select>
+              </div>
+            </div>
 
-          <div className="mt-2">
-            <h4 className="section-heading text-sm mb-2">Exports</h4>
-            <div className="flex flex-col gap-2">
-              <button onClick={downloadTripsCSV} className="px-3 py-2 rounded-lg border border-slate-200 text-sm hover:border-purple-300 hover:text-purple-600 transition">Download Trips CSV</button>
-              <button onClick={downloadExpensesCSV} className="px-3 py-2 rounded-lg border border-slate-200 text-sm hover:border-purple-300 hover:text-purple-600 transition">Download Expenses CSV</button>
-              <button onClick={downloadIncidents} className="px-3 py-2 rounded-lg border border-slate-200 text-sm hover:border-purple-300 hover:text-purple-600 transition">Download Incidents CSV</button>
-              <button onClick={exportPowerBI} className="px-3 py-2 rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-sm shadow-sm hover:shadow transition">Export snapshot (Power BI/JSON)</button>
+            {/* Enhanced Export Section */}
+            <div className="pt-6 border-t border-gray-100">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                </div>
+                <h4 className="section-heading text-sm font-semibold">Data Exports</h4>
+              </div>
+              <div className="space-y-3">
+                <button 
+                  onClick={downloadTripsCSV} 
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm font-medium hover:border-purple-300 hover:text-purple-600 hover:bg-purple-50 transition-all flex items-center gap-3"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                  Download Trips CSV
+                </button>
+                <button 
+                  onClick={downloadExpensesCSV} 
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm font-medium hover:border-purple-300 hover:text-purple-600 hover:bg-purple-50 transition-all flex items-center gap-3"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                  </svg>
+                  Download Expenses CSV
+                </button>
+                <button 
+                  onClick={downloadIncidents} 
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm font-medium hover:border-purple-300 hover:text-purple-600 hover:bg-purple-50 transition-all flex items-center gap-3"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                  </svg>
+                  Download Incidents CSV
+                </button>
+                <button 
+                  onClick={exportPowerBI} 
+                  className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-sm font-medium shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-3"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                  </svg>
+                  Export Power BI Snapshot
+                </button>
+              </div>
             </div>
           </div>
         </aside>
 
-        <main className="col-span-9 space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="surface-card p-5">
-              <div className="stat-label">Total Trips</div>
-              <div className="stat-number text-3xl">{trips.length}</div>
+        {/* Enhanced Main Content */}
+        <main className="col-span-9 space-y-8">
+          {/* Enhanced KPI Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="surface-card p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                      </svg>
+                    </div>
+                    <span className="text-sm font-medium text-blue-700">Total Trips</span>
+                  </div>
+                  <div className="text-3xl font-bold text-gray-900">{trips.length}</div>
+                  <div className="text-sm text-blue-600 mt-1">Active & completed</div>
+                </div>
+                <div className="text-right">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-500 rounded-full opacity-20"></div>
+                </div>
+              </div>
             </div>
-            <div className="surface-card p-5">
-              <div className="stat-label">Total Spend</div>
-              <div className="stat-number text-3xl">${expenses.reduce((s,e)=>s+e.amount,0).toLocaleString()}</div>
+
+            <div className="surface-card p-6 bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-100 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-green-500 rounded-lg flex items-center justify-center">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                      </svg>
+                    </div>
+                    <span className="text-sm font-medium text-emerald-700">Total Spend</span>
+                  </div>
+                  <div className="text-3xl font-bold text-gray-900">${expenses.reduce((s,e)=>s+e.amount,0).toLocaleString()}</div>
+                  <div className="text-sm text-emerald-600 mt-1">All categories</div>
+                </div>
+                <div className="text-right">
+                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-full opacity-20"></div>
+                </div>
+              </div>
             </div>
-            <div className="surface-card p-5">
-              <div className="stat-label">Incidents</div>
-              <div className="stat-number text-3xl">{incidents.length}</div>
+
+            <div className="surface-card p-6 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                      </svg>
+                    </div>
+                    <span className="text-sm font-medium text-amber-700">Incidents</span>
+                  </div>
+                  <div className="text-3xl font-bold text-gray-900">{incidents.length}</div>
+                  <div className="text-sm text-amber-600 mt-1">Safety events</div>
+                </div>
+                <div className="text-right">
+                  <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-amber-500 rounded-full opacity-20"></div>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="surface-card p-6">
-              <h4 className="section-heading text-lg mb-2">Travel frequency by employee</h4>
-              <div style={{ width: '100%', height: 220 }}>
-                <ResponsiveContainer width="100%" height={220}>
-                  <BarChart data={freqByEmployee}>
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="trips" fill="#7c3aed" />
+          {/* Enhanced Chart Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="surface-card p-8 bg-white/80 backdrop-blur-sm border border-purple-100 rounded-2xl shadow-lg">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="section-heading text-xl font-semibold">Travel Frequency</h4>
+                  <p className="text-sm text-gray-600">Trips per employee</p>
+                </div>
+              </div>
+              <div style={{ width: '100%', height: 280 }}>
+                <ResponsiveContainer width="100%" height={280}>
+                  <BarChart data={freqByEmployee} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                    <XAxis 
+                      dataKey="name" 
+                      tick={{ fontSize: 12 }}
+                      axisLine={{ stroke: '#e2e8f0' }}
+                      tickLine={{ stroke: '#e2e8f0' }}
+                    />
+                    <YAxis 
+                      tick={{ fontSize: 12 }}
+                      axisLine={{ stroke: '#e2e8f0' }}
+                      tickLine={{ stroke: '#e2e8f0' }}
+                    />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'white', 
+                        border: '1px solid #e2e8f0', 
+                        borderRadius: '12px',
+                        boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
+                      }}
+                    />
+                    <Bar 
+                      dataKey="trips" 
+                      fill="url(#purpleGradient)"
+                      radius={[4, 4, 0, 0]}
+                    />
+                    <defs>
+                      <linearGradient id="purpleGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#7c3aed" />
+                        <stop offset="100%" stopColor="#a78bfa" />
+                      </linearGradient>
+                    </defs>
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
-            <div className="surface-card p-6">
-              <h4 className="section-heading text-lg mb-2">Spend breakdown by category</h4>
-              <div style={{ width: '100%', height: 220 }}>
-                <ResponsiveContainer width="100%" height={220}>
+            <div className="surface-card p-8 bg-white/80 backdrop-blur-sm border border-emerald-100 rounded-2xl shadow-lg">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="section-heading text-xl font-semibold">Spend Breakdown</h4>
+                  <p className="text-sm text-gray-600">By expense category</p>
+                </div>
+              </div>
+              <div style={{ width: '100%', height: 280 }}>
+                <ResponsiveContainer width="100%" height={280}>
                   <PieChart>
-                    <Pie data={spendByCategory} dataKey="value" nameKey="name" outerRadius={80} label>
-                      {spendByCategory.map((entry, index) => <Cell key={index} fill={COLORS[index % COLORS.length]} />)}
+                    <Pie 
+                      data={spendByCategory} 
+                      dataKey="value" 
+                      nameKey="name" 
+                      outerRadius={100} 
+                      innerRadius={40}
+                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      labelLine={false}
+                    >
+                      {spendByCategory.map((entry, index) => (
+                        <Cell 
+                          key={index} 
+                          fill={COLORS[index % COLORS.length]} 
+                        />
+                      ))}
                     </Pie>
-                    <Legend />
-                    <Tooltip />
+                    <Legend 
+                      wrapperStyle={{ fontSize: '12px', paddingTop: '20px' }}
+                    />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'white', 
+                        border: '1px solid #e2e8f0', 
+                        borderRadius: '12px',
+                        boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
+                      }}
+                    />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="surface-card p-6">
-              <h4 className="section-heading text-lg mb-2">Policy compliance</h4>
-              <div style={{ width: '100%', height: 180 }}>
-                <ResponsiveContainer width="100%" height={180}>
+          {/* Enhanced Compliance & ESG Charts */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="surface-card p-8 bg-white/80 backdrop-blur-sm border border-blue-100 rounded-2xl shadow-lg">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="section-heading text-xl font-semibold">Policy Compliance</h4>
+                  <p className="text-sm text-gray-600">Trip approval status</p>
+                </div>
+              </div>
+              <div style={{ width: '100%', height: 240 }}>
+                <ResponsiveContainer width="100%" height={240}>
                   <PieChart>
-                    <Pie data={compliance} dataKey="value" nameKey="name" outerRadius={70} label>
-                      {compliance.map((entry, index) => <Cell key={index} fill={COLORS[index % COLORS.length]} />)}
+                    <Pie 
+                      data={compliance} 
+                      dataKey="value" 
+                      nameKey="name" 
+                      outerRadius={90} 
+                      innerRadius={30}
+                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      labelLine={false}
+                    >
+                      {compliance.map((entry, index) => (
+                        <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                      ))}
                     </Pie>
-                    <Tooltip />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'white', 
+                        border: '1px solid #e2e8f0', 
+                        borderRadius: '12px',
+                        boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
+                      }}
+                    />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
-            <div className="surface-card p-6">
-              <h4 className="section-heading text-lg mb-2">ESG / CO2 by destination (estimate)</h4>
-              <div style={{ width: '100%', height: 180 }}>
-                <ResponsiveContainer width="100%" height={180}>
+            <div className="surface-card p-8 bg-white/80 backdrop-blur-sm border border-green-100 rounded-2xl shadow-lg">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="section-heading text-xl font-semibold">ESG Impact</h4>
+                  <p className="text-sm text-gray-600">CO2 by destination (estimate)</p>
+                </div>
+              </div>
+              <div style={{ width: '100%', height: 240 }}>
+                <ResponsiveContainer width="100%" height={240}>
                   <PieChart>
-                    <Pie data={co2ByDestination} dataKey="value" nameKey="name" outerRadius={70} label>
-                      {co2ByDestination.map((entry, index) => <Cell key={index} fill={COLORS[index % COLORS.length]} />)}
+                    <Pie 
+                      data={co2ByDestination} 
+                      dataKey="value" 
+                      nameKey="name" 
+                      outerRadius={90} 
+                      innerRadius={30}
+                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      labelLine={false}
+                    >
+                      {co2ByDestination.map((entry, index) => (
+                        <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                      ))}
                     </Pie>
-                    <Tooltip />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'white', 
+                        border: '1px solid #e2e8f0', 
+                        borderRadius: '12px',
+                        boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
+                      }}
+                    />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
             </div>
           </div>
 
-          <div className="surface-card p-6">
-            <h3 className="section-heading text-xl mb-3">Risk & Safety Incidents</h3>
+          {/* Enhanced Incidents Table */}
+          <div className="surface-card p-8 bg-white/80 backdrop-blur-sm border border-red-100 rounded-2xl shadow-lg">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-500 rounded-xl flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 className="section-heading text-2xl font-semibold">Risk & Safety Incidents</h3>
+                <p className="text-sm text-gray-600">Track and monitor safety events</p>
+              </div>
+            </div>
+            
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full">
                 <thead>
-                  <tr className="text-left text-xs text-muted uppercase tracking-[0.18em]">
-                    <th className="py-2">ID</th>
-                    <th>Date</th>
-                    <th>Trip</th>
-                    <th>Severity</th>
-                    <th>Note</th>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-4 px-4 font-semibold text-gray-700">ID</th>
+                    <th className="text-left py-4 px-4 font-semibold text-gray-700">Date</th>
+                    <th className="text-left py-4 px-4 font-semibold text-gray-700">Trip</th>
+                    <th className="text-left py-4 px-4 font-semibold text-gray-700">Severity</th>
+                    <th className="text-left py-4 px-4 font-semibold text-gray-700">Description</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-gray-100">
                   {incidents.map(i => (
-                    <tr key={i.id} className="border-t border-slate-200/60">
-                      <td className="py-2">{i.id}</td>
-                      <td>{i.date}</td>
-                      <td>{i.tripId}</td>
-                      <td>{i.severity}</td>
-                      <td>{i.note}</td>
+                    <tr key={i.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="py-4 px-4">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                          {i.id}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 text-sm text-gray-600">{i.date}</td>
+                      <td className="py-4 px-4">
+                        <span className="text-sm font-medium text-gray-900">{i.tripId}</span>
+                      </td>
+                      <td className="py-4 px-4">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          i.severity === 'High' ? 'bg-red-100 text-red-800' :
+                          i.severity === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-green-100 text-green-800'
+                        }`}>
+                          {i.severity}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 text-sm text-gray-600 max-w-xs truncate">{i.note}</td>
                     </tr>
                   ))}
                 </tbody>
