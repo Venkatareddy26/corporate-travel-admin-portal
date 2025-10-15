@@ -354,14 +354,14 @@ body{
 	transform: scale(1.05);
 }
 
-/* Professional Clean Sidebar */
+/* Beautiful Purple Gradient Sidebar */
 .sidebar{
 	width: 280px;
 	padding: 28px 20px;
-	background: white;
+	background: linear-gradient(180deg, #7c3aed 0%, #6d28d9 100%);
 	border-radius: 0;
-	border-right: 1px solid rgba(226, 232, 240, 0.8);
-	box-shadow: 2px 0 8px rgba(0, 0, 0, 0.04);
+	border: none;
+	box-shadow: 4px 0 20px rgba(124, 58, 237, 0.15);
 	position: sticky;
 	top: 0;
 	display: flex;
@@ -385,7 +385,7 @@ body{
 	margin: 0;
 }
 
-/* Professional Clean Navigation */
+/* Beautiful Purple Sidebar Navigation */
 .nav-button{
 	display: flex;
 	align-items: center;
@@ -396,7 +396,7 @@ body{
 	background: transparent;
 	width: 100%;
 	text-align: left;
-	color: #64748b;
+	color: rgba(255, 255, 255, 0.8);
 	font-size: 0.9375rem;
 	font-weight: 500;
 	cursor: pointer;
@@ -412,8 +412,8 @@ body{
 }
 
 .nav-button:hover{
-	background: rgba(124, 58, 237, 0.08);
-	color: #7c3aed;
+	background: rgba(255, 255, 255, 0.15);
+	color: white;
 	transform: translateX(4px);
 }
 
@@ -422,15 +422,14 @@ body{
 }
 
 .nav-active{
-	background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+	background: rgba(255, 255, 255, 0.2);
 	color: white;
 	font-weight: 600;
-	box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .nav-active:hover{
 	transform: translateX(0);
-	background: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%);
 }
 
 .nav-label{
@@ -451,19 +450,20 @@ body{
 	transition: all 0.2s ease;
 }
 
-/* Professional Clean User Profile */
+/* Beautiful Purple Sidebar User Profile */
 .admin-profile{
 	position: relative;
 	padding: 16px;
-	background: rgba(248, 250, 252, 0.8);
+	background: rgba(255, 255, 255, 0.1);
 	border-radius: 12px;
-	border: 1px solid rgba(226, 232, 240, 0.8);
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+	border: none;
+	box-shadow: none;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: 12px;
 	overflow: visible;
+	backdrop-filter: blur(10px);
 	margin-top: auto;
 }
 
@@ -471,17 +471,17 @@ body{
 	width: 44px;
 	height: 44px;
 	border-radius: 50%;
-	background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+	background: rgba(255, 255, 255, 0.25);
 	color: white;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	font-weight: 700;
 	font-size: 1.125rem;
-	box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
+	box-shadow: none;
 	flex-shrink: 0;
 	letter-spacing: -0.02em;
-	border: none;
+	border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .admin-info-wrap{
@@ -509,7 +509,7 @@ body{
 }
 
 .admin-name{
-	color: #1e293b;
+	color: white;
 	font-size: 0.875rem;
 	font-weight: 600;
 	letter-spacing: -0.01em;
@@ -525,7 +525,7 @@ body{
 
 .admin-email{
 	font-size: 0.75rem;
-	color: #64748b;
+	color: rgba(255, 255, 255, 0.7);
 	letter-spacing: -0.01em;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -545,24 +545,25 @@ body{
 	margin-top:8px;
 }
 
-/* Professional Clean Sidebar Header */
+/* Beautiful Purple Sidebar Header */
 .sidebar-top{
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	padding: 16px;
 	border-radius: 12px;
-	background: rgba(248, 250, 252, 0.8);
-	border: 1px solid rgba(226, 232, 240, 0.8);
+	background: rgba(255, 255, 255, 0.1);
+	border: none;
 	gap: 12px;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+	backdrop-filter: blur(10px);
+	box-shadow: none;
 	margin-bottom: 8px;
 }
 
 .sidebar-top .nav-label{
 	font-size: 1rem;
 	font-weight: 700;
-	color: #1e293b;
+	color: white;
 	letter-spacing: -0.02em;
 }
 
@@ -574,14 +575,14 @@ body{
 	width: 40px;
 	height: 40px;
 	border-radius: 12px;
-	background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+	background: rgba(255, 255, 255, 0.2);
 	color: white;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	font-weight: 700;
 	font-size: 1rem;
-	box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
+	box-shadow: none;
 	flex-shrink: 0;
 	letter-spacing: -0.02em;
 }
