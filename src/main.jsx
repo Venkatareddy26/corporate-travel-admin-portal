@@ -2,15 +2,15 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './index.css';
-import TravelDashboard from './dashboard.jsx';
+import TravelDashboard from './dashboard-beautiful.jsx';
 import Dashboard1 from './components/dashboard1.jsx';
-import PolicyBuilder from './policy.jsx';
-import Trips from './trips.jsx';
-import Risk from './risk.jsx';
-import ExpensePage from './expense.jsx';
-import Documents from './documents.jsx';
-import ReportsPage from './reports.jsx';
-import AnalyticsPage from './analytics.jsx';
+import PolicyBuilder from './policy-simple.jsx';
+import Trips from './trips-simple.jsx';
+import Risk from './risk-simple.jsx';
+import ExpensePage from './expense-simple.jsx';
+import Documents from './documents-simple.jsx';
+import ReportsPage from './reports-simple.jsx';
+import AnalyticsPage from './analytics-simple.jsx';
 
 function AppRoutes() {
 	return (
