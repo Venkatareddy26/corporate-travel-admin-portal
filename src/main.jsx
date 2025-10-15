@@ -4,7 +4,6 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './index.css';
 import TravelDashboard from './dashboard.jsx';
 import Dashboard1 from './components/dashboard1.jsx';
-console.log('[debug] main.jsx imported Dashboard1:', typeof Dashboard1);
 import PolicyBuilder from './policy.jsx';
 import Trips from './trips.jsx';
 import Risk from './risk.jsx';

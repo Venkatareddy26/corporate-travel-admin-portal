@@ -1,11 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { 
+  LayoutDashboard, FileText, Plane, Shield, DollarSign, 
+  FolderOpen, BarChart3, TrendingUp, Users, MapPin, 
+  Calendar, Clock, AlertTriangle, CheckCircle, Menu, X,
+  ChevronRight, ChevronLeft, Settings, LogOut, User, Bell
+} from 'lucide-react';
 import ThemeToggle from './theme-toggle';
 import GlobalMap from './components/GlobalMap';
 import RiskFeed from './components/RiskFeed';
 import WidgetManager from './components/WidgetManager';
+import { Card, CardHeader, CardTitle, CardContent } from './components/ui/Card';
+import { StatCard, StatsGrid, MiniStat } from './components/ui/Stats';
+import Button from './components/ui/Button';
+import Badge, { StatusBadge } from './components/ui/Badge';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from './components/ui/Tabs';
+import Modal, { ModalFooter } from './components/ui/Modal';
 
-// TravelDashboard.jsx - cleaned and fixed structure
+// Modern Travel Dashboard with Beautiful UI/UX
 
 const summary = {
   airfare: 5863.52,
