@@ -108,7 +108,7 @@ export default function Analytics(){
   }
 
   return (
-    <div className="app-root space-y-8">
+    <div className="app-root space-y-6">
       {/* Enhanced Header */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-purple-50 via-blue-50 to-indigo-50 opacity-50"></div>
@@ -131,7 +131,7 @@ export default function Analytics(){
         </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-8">
+      <div className="grid grid-cols-12 gap-6">
         {/* Enhanced Filters Sidebar */}
         <aside className="col-span-3">
           <div className="surface-card p-6 space-y-6 bg-white/80 backdrop-blur-sm border border-purple-100 rounded-2xl shadow-lg">
@@ -224,7 +224,7 @@ export default function Analytics(){
         </aside>
 
         {/* Enhanced Main Content */}
-        <main className="col-span-9 space-y-8">
+        <main className="col-span-9 space-y-6">
           {/* Enhanced KPI Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div className="surface-card p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
@@ -290,30 +290,30 @@ export default function Analytics(){
           </div>
 
           {/* Enhanced Chart Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="surface-card p-8 bg-white/80 backdrop-blur-sm border border-purple-100 rounded-2xl shadow-lg">
-              <div className="flex items-center gap-3 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="surface-card p-6 bg-white/80 backdrop-blur-sm border border-purple-100 rounded-2xl shadow-lg">
+              <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                   </svg>
                 </div>
                 <div>
-                  <h4 className="section-heading text-xl font-semibold">Travel Frequency</h4>
-                  <p className="text-sm text-gray-600">Trips per employee</p>
+                  <h4 className="section-heading text-lg font-semibold">Travel Frequency</h4>
+                  <p className="text-xs text-gray-600">Trips per employee</p>
                 </div>
               </div>
-              <div style={{ width: '100%', height: 280 }}>
-                <ResponsiveContainer width="100%" height={280}>
-                  <BarChart data={freqByEmployee} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+              <div style={{ width: '100%', height: 260 }}>
+                <ResponsiveContainer width="100%" height={260}>
+                  <BarChart data={freqByEmployee} margin={{ top: 10, right: 20, left: 10, bottom: 5 }}>
                     <XAxis 
                       dataKey="name" 
-                      tick={{ fontSize: 12 }}
+                      tick={{ fontSize: 11 }}
                       axisLine={{ stroke: '#e2e8f0' }}
                       tickLine={{ stroke: '#e2e8f0' }}
                     />
                     <YAxis 
-                      tick={{ fontSize: 12 }}
+                      tick={{ fontSize: 11 }}
                       axisLine={{ stroke: '#e2e8f0' }}
                       tickLine={{ stroke: '#e2e8f0' }}
                     />
@@ -341,8 +341,8 @@ export default function Analytics(){
               </div>
             </div>
 
-            <div className="surface-card p-8 bg-white/80 backdrop-blur-sm border border-emerald-100 rounded-2xl shadow-lg">
-              <div className="flex items-center gap-3 mb-6">
+            <div className="surface-card p-6 bg-white/80 backdrop-blur-sm border border-emerald-100 rounded-2xl shadow-lg">
+              <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path>
@@ -350,19 +350,19 @@ export default function Analytics(){
                   </svg>
                 </div>
                 <div>
-                  <h4 className="section-heading text-xl font-semibold">Spend Breakdown</h4>
-                  <p className="text-sm text-gray-600">By expense category</p>
+                  <h4 className="section-heading text-lg font-semibold">Spend Breakdown</h4>
+                  <p className="text-xs text-gray-600">By expense category</p>
                 </div>
               </div>
-              <div style={{ width: '100%', height: 280 }}>
-                <ResponsiveContainer width="100%" height={280}>
+              <div style={{ width: '100%', height: 260 }}>
+                <ResponsiveContainer width="100%" height={260}>
                   <PieChart>
                     <Pie 
                       data={spendByCategory} 
                       dataKey="value" 
                       nameKey="name" 
-                      outerRadius={100} 
-                      innerRadius={40}
+                      outerRadius={85} 
+                      innerRadius={35}
                       label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                       labelLine={false}
                     >
@@ -374,7 +374,7 @@ export default function Analytics(){
                       ))}
                     </Pie>
                     <Legend 
-                      wrapperStyle={{ fontSize: '12px', paddingTop: '20px' }}
+                      wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }}
                     />
                     <Tooltip 
                       contentStyle={{ 
@@ -391,28 +391,28 @@ export default function Analytics(){
           </div>
 
           {/* Enhanced Compliance & ESG Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="surface-card p-8 bg-white/80 backdrop-blur-sm border border-blue-100 rounded-2xl shadow-lg">
-              <div className="flex items-center gap-3 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="surface-card p-6 bg-white/80 backdrop-blur-sm border border-blue-100 rounded-2xl shadow-lg">
+              <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                   </svg>
                 </div>
                 <div>
-                  <h4 className="section-heading text-xl font-semibold">Policy Compliance</h4>
-                  <p className="text-sm text-gray-600">Trip approval status</p>
+                  <h4 className="section-heading text-lg font-semibold">Policy Compliance</h4>
+                  <p className="text-xs text-gray-600">Trip approval status</p>
                 </div>
               </div>
-              <div style={{ width: '100%', height: 240 }}>
-                <ResponsiveContainer width="100%" height={240}>
+              <div style={{ width: '100%', height: 220 }}>
+                <ResponsiveContainer width="100%" height={220}>
                   <PieChart>
                     <Pie 
                       data={compliance} 
                       dataKey="value" 
                       nameKey="name" 
-                      outerRadius={90} 
-                      innerRadius={30}
+                      outerRadius={75} 
+                      innerRadius={25}
                       label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                       labelLine={false}
                     >
@@ -433,27 +433,27 @@ export default function Analytics(){
               </div>
             </div>
 
-            <div className="surface-card p-8 bg-white/80 backdrop-blur-sm border border-green-100 rounded-2xl shadow-lg">
-              <div className="flex items-center gap-3 mb-6">
+            <div className="surface-card p-6 bg-white/80 backdrop-blur-sm border border-green-100 rounded-2xl shadow-lg">
+              <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                   </svg>
                 </div>
                 <div>
-                  <h4 className="section-heading text-xl font-semibold">ESG Impact</h4>
-                  <p className="text-sm text-gray-600">CO2 by destination (estimate)</p>
+                  <h4 className="section-heading text-lg font-semibold">ESG Impact</h4>
+                  <p className="text-xs text-gray-600">CO2 by destination (estimate)</p>
                 </div>
               </div>
-              <div style={{ width: '100%', height: 240 }}>
-                <ResponsiveContainer width="100%" height={240}>
+              <div style={{ width: '100%', height: 220 }}>
+                <ResponsiveContainer width="100%" height={220}>
                   <PieChart>
                     <Pie 
                       data={co2ByDestination} 
                       dataKey="value" 
                       nameKey="name" 
-                      outerRadius={90} 
-                      innerRadius={30}
+                      outerRadius={75} 
+                      innerRadius={25}
                       label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                       labelLine={false}
                     >
@@ -476,43 +476,43 @@ export default function Analytics(){
           </div>
 
           {/* Enhanced Incidents Table */}
-          <div className="surface-card p-8 bg-white/80 backdrop-blur-sm border border-red-100 rounded-2xl shadow-lg">
-            <div className="flex items-center gap-3 mb-6">
+          <div className="surface-card p-6 bg-white/80 backdrop-blur-sm border border-red-100 rounded-2xl shadow-lg">
+            <div className="flex items-center gap-3 mb-5">
               <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-500 rounded-xl flex items-center justify-center">
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
                 </svg>
               </div>
               <div>
-                <h3 className="section-heading text-2xl font-semibold">Risk & Safety Incidents</h3>
-                <p className="text-sm text-gray-600">Track and monitor safety events</p>
+                <h3 className="section-heading text-lg font-semibold">Risk & Safety Incidents</h3>
+                <p className="text-xs text-gray-600">Track and monitor safety events</p>
               </div>
             </div>
             
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-4 px-4 font-semibold text-gray-700">ID</th>
-                    <th className="text-left py-4 px-4 font-semibold text-gray-700">Date</th>
-                    <th className="text-left py-4 px-4 font-semibold text-gray-700">Trip</th>
-                    <th className="text-left py-4 px-4 font-semibold text-gray-700">Severity</th>
-                    <th className="text-left py-4 px-4 font-semibold text-gray-700">Description</th>
+                  <tr className="border-b-2 border-gray-200">
+                    <th className="text-left py-3 px-3 text-xs font-semibold text-gray-700 uppercase tracking-wider">ID</th>
+                    <th className="text-left py-3 px-3 text-xs font-semibold text-gray-700 uppercase tracking-wider">Date</th>
+                    <th className="text-left py-3 px-3 text-xs font-semibold text-gray-700 uppercase tracking-wider">Trip</th>
+                    <th className="text-left py-3 px-3 text-xs font-semibold text-gray-700 uppercase tracking-wider">Severity</th>
+                    <th className="text-left py-3 px-3 text-xs font-semibold text-gray-700 uppercase tracking-wider">Description</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {incidents.map(i => (
                     <tr key={i.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="py-4 px-4">
+                      <td className="py-3 px-3">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                           {i.id}
                         </span>
                       </td>
-                      <td className="py-4 px-4 text-sm text-gray-600">{i.date}</td>
-                      <td className="py-4 px-4">
+                      <td className="py-3 px-3 text-sm text-gray-600">{i.date}</td>
+                      <td className="py-3 px-3">
                         <span className="text-sm font-medium text-gray-900">{i.tripId}</span>
                       </td>
-                      <td className="py-4 px-4">
+                      <td className="py-3 px-3">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           i.severity === 'High' ? 'bg-red-100 text-red-800' :
                           i.severity === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
@@ -521,7 +521,7 @@ export default function Analytics(){
                           {i.severity}
                         </span>
                       </td>
-                      <td className="py-4 px-4 text-sm text-gray-600 max-w-xs truncate">{i.note}</td>
+                      <td className="py-3 px-3 text-sm text-gray-600">{i.note}</td>
                     </tr>
                   ))}
                 </tbody>
