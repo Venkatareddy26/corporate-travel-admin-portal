@@ -2,7 +2,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './index.css';
-import TravelDashboard from './dashboard.jsx';
+import TravelDashboard from './dashboard-beautiful.jsx';
 import Dashboard1 from './components/dashboard1.jsx';
 import PolicyBuilder from './policy.jsx';
 import Trips from './trips.jsx';

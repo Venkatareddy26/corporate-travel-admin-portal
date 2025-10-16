@@ -181,31 +181,59 @@ export default function Risk(){
   return (
     <div className="min-h-screen app-root">
       <div className="max-w-7xl mx-auto">
-        <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="page-header">
-            <h1 className="section-heading text-3xl">Risk & Safety</h1>
-            <p className="section-subheading">Visualize regional risk, manage advisories, and keep travelers supported.</p>
+        <div className="risk-navbar">
+          <div className="risk-navbar-header">
+            <div className="page-header">
+              <h1 className="section-heading text-3xl">Risk & Safety</h1>
+              <p className="section-subheading">Visualize regional risk, manage advisories, and keep travelers supported.</p>
+            </div>
           </div>
-          <div className="page-actions">
-            <button onClick={() => navigate(-1)} className="btn btn-outline">
+          
+          <div className="risk-navbar-actions">
+            <button onClick={() => navigate(-1)} className="btn btn-outline btn-icon">
               <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
                 <path d="M11 5l-5 5 5 5" strokeLinecap="round" strokeLinejoin="round" />
                 <path d="M6 10h8" strokeLinecap="round" />
               </svg>
               Back
             </button>
-            <button onClick={()=> { const adv = { id: generateId('adv'), destId: destinations[0].id, title: 'Manual advisory', level: 'Medium', ts: new Date().toISOString(), description: 'Manual advisory created by operator' }; setAdvisories(a => [adv, ...a]); sendNotification('ops@example.com', adv.title, adv.description);} } className="btn btn-primary">
-              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
-                <path d="M10 4v12" strokeLinecap="round" />
-                <path d="M4 10h12" strokeLinecap="round" />
+            
+            <button 
+              onClick={()=> { 
+                const adv = { 
+                  id: generateId('adv'), 
+                  destId: destinations[0].id, 
+                  title: 'Manual advisory', 
+                  level: 'Medium', 
+                  ts: new Date().toISOString(), 
+                  description: 'Manual advisory created by operator' 
+                }; 
+                setAdvisories(a => [adv, ...a]); 
+                sendNotification('ops@example.com', adv.title, adv.description);
+              }} 
+              className="btn-create-advisory"
+            >
+              <svg viewBox="0 0 20 20" fill="currentColor" className="icon-plus">
+                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
               </svg>
               Create advisory
             </button>
-            <button onClick={()=> { const ec = getEmergencyContacts(); if(ec.length===0) alert('No emergency contacts saved'); else alert(JSON.stringify(ec[0], null, 2)); }} className="btn btn-outline">
+            
+            <button 
+              onClick={()=> { 
+                const ec = getEmergencyContacts(); 
+                if(ec.length===0) alert('No emergency contacts saved'); 
+                else alert(JSON.stringify(ec[0], null, 2)); 
+              }} 
+              className="btn btn-outline btn-icon"
+            >
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
+                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
               Emergency contacts
             </button>
           </div>
-        </header>
+        </div>
 
         <div className="grid grid-cols-12 gap-6">
           <div className="col-span-8 surface-card p-5">
