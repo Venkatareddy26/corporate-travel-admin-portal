@@ -288,8 +288,8 @@ export default function Trips(){
 
     if(!trip) return null;
     return (
-      <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4">
-        <div className="surface-card w-full max-w-3xl p-6">
+      <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4 overflow-y-auto">
+        <div className="surface-card w-full max-w-3xl p-6 my-8 max-h-[90vh] overflow-y-auto">
           <div className="flex items-start justify-between">
             <div>
               <h3 className="section-heading text-xl">Trip details - {trip.destination}</h3>
