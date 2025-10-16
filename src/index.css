@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* 2025 Modern Design System - Unified Purple Theme */
 :root {
 	/* Purple Theme Colors */
