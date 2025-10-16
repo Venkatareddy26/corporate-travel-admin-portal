@@ -11,6 +11,8 @@ import ExpensePage from './expense.jsx';
 import Documents from './documents.jsx';
 import ReportsPage from './reports.jsx';
 import AnalyticsPage from './analytics.jsx';
+import AlertsCenter from './alerts.jsx';
+import InsuranceManagement from './insurance.jsx';
 
 function AppRoutes() {
 	return (
@@ -24,6 +26,8 @@ function AppRoutes() {
 			<Route path="/expense" element={<ExpensePage />} />
 			<Route path="/documents" element={<Documents />} />
 			<Route path="/analytics" element={<AnalyticsPage />} />
+			<Route path="/alerts" element={<AlertsCenter />} />
+			<Route path="/insurance" element={<InsuranceManagement />} />
 		</Routes>
 	);
 }

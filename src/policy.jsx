@@ -568,8 +568,8 @@ export default function policy() {
       <div className="max-w-7xl mx-auto">
         {/* Enhanced Header */}
         <div className="mb-8">
-          <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-2xl p-8 text-white shadow-2xl">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+          <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-2xl p-8 text-white shadow-2xl policy-header">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 policy-header__layout">
               <div className="flex-1">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
@@ -599,16 +599,16 @@ export default function policy() {
                 </div>
               </div>
               
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-3 policy-header__actions">
                 <button
                   onClick={() => setMobileNavOpen((prev) => !prev)}
-                  className="xl:hidden bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/20 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200"
+                  className="xl:hidden bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/20 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 policy-header__button"
                   aria-expanded={mobileNavOpen}
                   aria-controls="policy-nav-panel"
                 >
                   {mobileNavOpen ? "Close Menu" : "Open Menu"}
                 </button>
-                <button onClick={() => navigate(-1)} className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/20 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center gap-2">
+                <button onClick={() => navigate(-1)} className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/20 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center gap-2 policy-header__button">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5l-5 5 5 5" />
                   </svg>
@@ -617,14 +617,14 @@ export default function policy() {
                 <ThemeToggle />
                 <button
                   onClick={savePolicy}
-                  className="bg-white text-indigo-600 hover:bg-indigo-50 rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-200 shadow-lg flex items-center gap-2"
+                  className="bg-white text-indigo-600 hover:bg-indigo-50 rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-200 shadow-lg flex items-center gap-2 policy-header__button policy-header__button--primary"
                   title="Save policy (localStorage)"
                 >
                   <IconSave /> Save Policy
                 </button>
                 <button
                   onClick={exportPolicy}
-                  className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/20 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center gap-2"
+                  className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/20 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center gap-2 policy-header__button"
                   title="Export policy as JSON"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -634,7 +634,7 @@ export default function policy() {
                   Export
                 </button>
 
-            <label className="cursor-pointer inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 px-4 py-2 rounded-lg font-medium transition">
+            <label className="cursor-pointer inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 px-4 py-2 rounded-lg font-medium transition policy-header__button policy-header__button--secondary">
               <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M10 13V3M6 7l4-4 4 4" strokeLinecap="round" strokeLinejoin="round" />
                 <path d="M3 17h14" strokeLinecap="round" />
@@ -743,45 +743,63 @@ export default function policy() {
           </aside>
 
           <main className="order-1 xl:order-2 xl:col-span-6 space-y-6">
-            <section className="bg-white/90 border border-purple-100 rounded-2xl p-6 shadow-sm">
-              <div className="flex flex-wrap items-start justify-between gap-6">
-                <div>
-                  <div className="text-xs uppercase tracking-wide text-purple-500">Active Policy</div>
-                  <div className="flex flex-wrap items-center gap-3 mt-2">
-                    <h2 className="text-xl font-semibold text-gray-900">{policy.meta?.name || "Untitled policy"}</h2>
-                    <Chip>{hasUnsavedChanges ? "Draft (unsaved changes)" : "Saved"}</Chip>
-                    {highRiskBadge && <Chip>{highRiskBadge}</Chip>}
-                  </div>
-                  <div className="text-xs text-gray-500 mt-2">
-                    Last updated&nbsp;
-                    {policy.meta?.updated ? new Date(policy.meta.updated).toLocaleString() : "Not saved yet"}
-                  </div>
-                  <div className="mt-3 text-xs text-gray-500 max-w-xl">
-                    Keep policy owners aligned by tracking assignments and approvals at a glance. Use the cards below to
-                    fine tune booking rules, safety constraints, and communications.
+            <section className="policy-hero-card">
+              <div className="policy-hero-card__inner">
+                <div className="policy-hero-card__meta">
+                  <span className="policy-hero-card__badge">Active policy</span>
+                  <div className="policy-hero-card__meta-group">
+                    <span className="policy-hero-card__pill">
+                      {hasUnsavedChanges ? "Draft pending save" : "All changes saved"}
+                    </span>
+                    {hasVersionHistory && (
+                      <span className="policy-hero-card__pill">{(policy.versions || []).length} versions</span>
+                    )}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm sm:min-w-[260px]">
-                  <div>
-                    <div className="text-xs text-gray-500 uppercase">Primary Approver</div>
-                    <div className="font-medium text-gray-900">{primaryApprover}</div>
+                <div className="policy-hero-card__content">
+                  <div className="policy-hero-card__primary">
+                    <h2 className="policy-hero-card__title text-2xl font-semibold">
+                      {policy.meta?.name || "Untitled policy"}
+                    </h2>
+                    <div className="policy-hero-card__tags">
+                      <Chip>{hasUnsavedChanges ? "Draft (unsaved changes)" : "Saved"}</Chip>
+                      {highRiskBadge && <Chip>{highRiskBadge}</Chip>}
+                      {policy.department && <Chip>{policy.department}</Chip>}
+                    </div>
+                    <p className="policy-hero-card__description">
+                      Keep policy owners aligned by tracking assignments and approvals at a glance. Use the cards below to
+                      fine tune booking rules, safety constraints, and communications.
+                    </p>
                   </div>
-                  <div>
-                    <div className="text-xs text-gray-500 uppercase">Budget Limit</div>
-                    <div className="font-medium text-gray-900">
+                  <div className="policy-hero-card__timestamp">
+                    <span className="policy-hero-card__timestamp-label">Last updated</span>
+                    <span className="policy-hero-card__timestamp-value">
+                      {policy.meta?.updated ? new Date(policy.meta.updated).toLocaleString() : "Not saved yet"}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="policy-hero-card__stats">
+                  <div className="policy-hero-card__stat">
+                    <span className="policy-hero-card__stat-label">Primary approver</span>
+                    <span className="policy-hero-card__stat-value">{primaryApprover}</span>
+                  </div>
+                  <div className="policy-hero-card__stat">
+                    <span className="policy-hero-card__stat-label">Budget limit</span>
+                    <span className="policy-hero-card__stat-value">
                       {policy.budgetLimit ? `$${policy.budgetLimit}` : "No limit defined"}
-                    </div>
+                    </span>
                   </div>
-                  <div>
-                    <div className="text-xs text-gray-500 uppercase">Notifications</div>
-                    <div className="font-medium text-gray-900">
+                  <div className="policy-hero-card__stat">
+                    <span className="policy-hero-card__stat-label">Notifications</span>
+                    <span className="policy-hero-card__stat-value">
                       {activeNotificationChannels.length ? activeNotificationChannels.join(", ") : "No channels"}
-                    </div>
+                    </span>
                   </div>
-                  <div>
-                    <div className="text-xs text-gray-500 uppercase">Region Coverage</div>
-                    <div className="font-medium text-gray-900">{policy.region || "All regions"}</div>
+                  <div className="policy-hero-card__stat">
+                    <span className="policy-hero-card__stat-label">Region coverage</span>
+                    <span className="policy-hero-card__stat-value">{policy.region || "All regions"}</span>
                   </div>
                 </div>
               </div>

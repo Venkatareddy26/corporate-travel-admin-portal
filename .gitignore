@@ -31,7 +31,7 @@ pnpm-debug.log*
 .idea
 *.suo
 *.ntvs*
-*.njsproj
+*.njsproja
 *.sln
 *.sw?
 
