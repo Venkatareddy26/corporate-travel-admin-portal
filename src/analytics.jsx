@@ -392,27 +392,27 @@ export default function Analytics(){
 
           {/* Enhanced Compliance & ESG Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="surface-card p-6 bg-white/80 backdrop-blur-sm border border-blue-100 rounded-2xl shadow-lg">
-              <div className="flex items-center gap-3 mb-4">
+            <div className="surface-card p-5 bg-white/80 backdrop-blur-sm border border-blue-100 rounded-2xl shadow-lg">
+              <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                   </svg>
                 </div>
                 <div>
-                  <h4 className="section-heading text-lg font-semibold">Policy Compliance</h4>
+                  <h4 className="section-heading text-base font-semibold">Policy Compliance</h4>
                   <p className="text-xs text-gray-600">Trip approval status</p>
                 </div>
               </div>
-              <div style={{ width: '100%', height: 220 }}>
-                <ResponsiveContainer width="100%" height={220}>
+              <div style={{ width: '100%', height: 200 }}>
+                <ResponsiveContainer width="100%" height={200}>
                   <PieChart>
                     <Pie 
                       data={compliance} 
                       dataKey="value" 
                       nameKey="name" 
-                      outerRadius={75} 
-                      innerRadius={25}
+                      outerRadius={65} 
+                      innerRadius={20}
                       label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                       labelLine={false}
                     >
@@ -433,27 +433,27 @@ export default function Analytics(){
               </div>
             </div>
 
-            <div className="surface-card p-6 bg-white/80 backdrop-blur-sm border border-green-100 rounded-2xl shadow-lg">
-              <div className="flex items-center gap-3 mb-4">
+            <div className="surface-card p-5 bg-white/80 backdrop-blur-sm border border-green-100 rounded-2xl shadow-lg">
+              <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                   </svg>
                 </div>
                 <div>
-                  <h4 className="section-heading text-lg font-semibold">ESG Impact</h4>
+                  <h4 className="section-heading text-base font-semibold">ESG Impact</h4>
                   <p className="text-xs text-gray-600">CO2 by destination (estimate)</p>
                 </div>
               </div>
-              <div style={{ width: '100%', height: 220 }}>
-                <ResponsiveContainer width="100%" height={220}>
+              <div style={{ width: '100%', height: 200 }}>
+                <ResponsiveContainer width="100%" height={200}>
                   <PieChart>
                     <Pie 
                       data={co2ByDestination} 
                       dataKey="value" 
                       nameKey="name" 
-                      outerRadius={75} 
-                      innerRadius={25}
+                      outerRadius={65} 
+                      innerRadius={20}
                       label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                       labelLine={false}
                     >
@@ -476,7 +476,7 @@ export default function Analytics(){
           </div>
 
           {/* Enhanced Incidents Table */}
-          <div className="surface-card p-6 bg-white/80 backdrop-blur-sm border border-red-100 rounded-2xl shadow-lg">
+          <div className="surface-card p-6 bg-white/80 backdrop-blur-sm border border-red-100 rounded-2xl shadow-lg" style={{ marginTop: '2rem' }}>
             <div className="flex items-center gap-3 mb-5">
               <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-500 rounded-xl flex items-center justify-center">
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
