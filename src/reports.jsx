@@ -33,16 +33,16 @@ function Card({ children, className = "" }) {
     </div>
   );
 }
-function Button({ children, variant = "primary", ...rest }) {
-  const base = "px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors";
+function Button({ children, variant = "primary", className = "", ...rest }) {
+  const base = "px-4 py-3 rounded-lg text-sm font-semibold shadow-sm transition-all duration-200";
   const styles =
     variant === "primary"
-      ? "bg-gradient-to-r from-purple-600 to-purple-500 text-white hover:from-purple-500 hover:to-purple-400"
+      ? "bg-gradient-to-r from-purple-600 to-purple-500 text-white hover:from-purple-500 hover:to-purple-400 hover:shadow-md"
       : variant === "danger"
-      ? "bg-gradient-to-r from-rose-500 to-rose-600 text-white hover:from-rose-600 hover:to-rose-700"
-      : "border border-slate-200 text-slate-700 hover:border-purple-300";
+      ? "bg-gradient-to-r from-rose-500 to-rose-600 text-white hover:from-rose-600 hover:to-rose-700 hover:shadow-md"
+      : "border-2 border-slate-200 text-slate-700 hover:border-purple-400 hover:bg-purple-50 hover:text-purple-700";
   return (
-    <button className={`${base} ${styles}`} {...rest}>
+    <button className={`${base} ${styles} ${className}`} {...rest}>
       {children}
     </button>
   );
@@ -112,38 +112,40 @@ const mockTrip = {
 function TripSummary({ trip }) {
   return (
     <Card>
-      <div className="flex justify-between items-start">
-        <div>
+      <div className="flex justify-between items-start gap-6">
+        <div className="flex-1">
           <h2 className="section-heading text-xl">Trip Summary</h2>
-          <p className="section-subheading">
+          <p className="section-subheading mt-1">
             {trip.destination.city}, {trip.destination.country}
           </p>
-          <p className="mt-2">
-            Purpose: <strong>{trip.purpose}</strong>
-          </p>
-          <p>
-            Risk: <Badge level={trip.risk} />
-          </p>
+          <div className="mt-4 space-y-2">
+            <p className="text-sm">
+              Purpose: <strong className="text-gray-900">{trip.purpose}</strong>
+            </p>
+            <p className="text-sm flex items-center gap-2">
+              Risk: <Badge level={trip.risk} />
+            </p>
+          </div>
         </div>
-        <div className="text-right">
-          <p className="stat-label">Duration</p>
-          <p className="stat-number text-2xl">{trip.durationDays} days</p>
+        <div className="flex-shrink-0 text-right bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl px-6 py-4 border border-purple-200">
+          <p className="stat-label text-purple-700 mb-1">DURATION</p>
+          <p className="stat-number text-3xl text-purple-600">{trip.durationDays} <span className="text-lg font-semibold">days</span></p>
         </div>
       </div>
 
-      <hr className="my-3" />
+      <hr className="my-5 border-gray-200" />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div>
-          <p className="text-xs text-gray-500">Passport</p>
-          <p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
+          <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Passport</p>
+          <p className="text-sm font-medium text-gray-900">
             {trip.documents.passport.status} • Expires{" "}
             {trip.documents.passport.expires}
           </p>
         </div>
-        <div>
-          <p className="text-xs text-gray-500">Insurance</p>
-          <p>
+        <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
+          <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Insurance</p>
+          <p className="text-sm font-medium text-gray-900">
             {trip.documents.insurance.provider} • Policy #
             {trip.documents.insurance.policy}
           </p>
@@ -235,9 +237,17 @@ function SafetyPanel({ trip, onCheckIn, onSOS }) {
 function ActionsBar({ trip }) {
   return (
     <Card>
-      <h3 className="section-heading text-lg mb-3">Actions</h3>
-      <div className="space-y-2">
-        <Button onClick={() => exportTripToPDF(trip)}>Download PDF</Button>
+      <h3 className="section-heading text-lg mb-4">Actions</h3>
+      <div className="space-y-3">
+        <Button 
+          onClick={() => exportTripToPDF(trip)}
+          className="w-full flex items-center justify-center gap-2"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          Download PDF
+        </Button>
         <Button
           onClick={() =>
             navigator.share
@@ -248,13 +258,21 @@ function ActionsBar({ trip }) {
                 })
               : alert("Sharing not supported")
           }
+          className="w-full flex items-center justify-center gap-2"
         >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+          </svg>
           Share
         </Button>
         <Button
           variant="outline"
           onClick={() => alert("Change request sent")}
+          className="w-full flex items-center justify-center gap-2"
         >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
           Request Change
         </Button>
       </div>
